@@ -1,0 +1,30 @@
+
+#checkbox-div {
+    width: 100px;
+    height: 25px;
+    margin: auto;
+}
+
+#pw-checkbox {
+    float: "left";
+}
+
+#pw-checkbox-text {
+    float: right;
+    margin: 3px 10px 10px 0px;
+    font-size: 10px;
+    width: 70px;
+}
+
+#go-back-btn {
+    background-color: red;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 20px;
+    border-width: 0px;
+    font-size: 16px;
+}
+
+#go-back-btn:hover {
+    background-color: darkred;
+}

@@ -1,0 +1,86 @@
+
+.frd-msg-container {
+    margin-bottom: 15px;
+    white-space: pre-wrap;
+}
+
+.friend-message {
+    background-color: darkgray;
+    margin: 10px 0px 5px 10px;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left;
+    max-width: 200px;
+    font-size: 14px;
+    overflow-wrap: break-word;
+}
+
+.friend-message-date {
+    font-size: 10px;
+    text-align: left;
+    margin: 5px 0px 0px 15px;
+}
+
+.usr-msg-container {
+    margin-bottom: 5px;
+    clear: both;
+    white-space: pre-wrap;
+}
+
+.user-message {
+    background-color: orange;
+    float: right;
+    position: relative;
+    margin: 10px 10px 5px 0px;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left;
+    max-width: 200px;
+    font-size: 14px;
+    overflow-wrap: break-word;
+}
+
+.user-message-date {
+    font-size: 10px;
+    text-align: right;
+    clear: right;
+    margin: 5px 15px 0px 0px;
+}
+
+#message-box {
+    width: 75vw;
+    bottom: 0;
+    position: absolute;
+}
+
+#message-field {
+    background-color: grey;
+    margin-bottom: 10px;
+    color: white;
+    font-family: inherit;
+    resize: none;
+    border-radius: 20px;
+    padding: 10px;
+    width: 50vw;
+    height: 20px;
+    max-height: 100px;
+}
+
+#message-field::-webkit-scrollbar {
+    display: none;
+}
+
+#message-field::placeholder {
+    color: rgba(245, 245, 245, 0.541);
+}
+
+#no-msg-text {
+    font-style: italic;
+}
+
+@media only screen and (min-width: 1700px) {
+    #message-field {
+        width: 25vw;
+        margin-right: 175px
+    }
+}

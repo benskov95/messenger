@@ -1,0 +1,113 @@
+#friend-box {
+    float: left;
+    width: 25vw;
+    max-width: 280px;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.123);
+    overflow-y: auto;
+    overflow-x: hidden;
+    direction: rtl;
+}
+
+#friend-box::-webkit-scrollbar {
+    width: 2px;
+}
+
+#friend-box::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);;
+}
+
+#friend-box::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid slategrey;
+    border-radius: 40px;
+    border-width: 0px;
+  }
+
+#friend-list {
+    list-style: none;
+    direction: ltr;
+}
+
+.friend-list-element {
+    float: left;
+    width: 25vw;
+    max-width: 280px;
+    margin-left: -40px;
+    display: flex;
+    text-align: center;
+    cursor: pointer;
+}
+
+.friend-list-element:hover {
+    background-color: gray;
+}
+
+.friend-name {
+    float: right;
+    font-size: 14px;
+}
+
+.friend-pic {
+    float: left;
+    margin: 10px;
+    max-width: 3em;
+    max-height: 3em;
+    border-radius: 40px;
+}
+
+#user-box {
+    background-color: rgb(36, 34, 34);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 25vw;
+    max-width: 280px;
+    height: 60px;
+}
+
+#username {
+    font-size: 14px;
+    margin-left: 60px;
+    position: fixed;
+}
+
+#user-pic {
+    margin: 5px 0px 0px 5px;
+    position: absolute;
+    left: 0;
+    max-width: 3em;
+    max-height: 3em;
+    border-radius: 40px;
+    cursor: pointer;
+}
+
+#home-btn {
+    right: 0;
+    position: absolute;
+    margin: 35px 5px 0px 0px;
+    height: 20px;
+    border-radius: 20px;
+    border-width: 0px;
+}
+
+#popup-menu {
+    margin-left: 55px;
+}
+
+#logout-btn {
+    background-color: red;
+    height: 40px;
+    padding: 10px;
+    border-radius: 20px;
+    border-width: 0px;
+}
+
+#logout-btn:hover {
+    background-color: darkred;
+}
+
+#empty-fr-list-text {
+    font-style: italic;
+    margin-right: 30px;
+}
