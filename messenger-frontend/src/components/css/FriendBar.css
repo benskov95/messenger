@@ -40,12 +40,28 @@
 }
 
 .friend-list-element:hover {
+    background-color: rgba(128, 128, 128, 0.568);
+}
+
+.friend-list-element-selected {
     background-color: gray;
+    float: left;
+    width: 25vw;
+    max-width: 280px;
+    margin-left: -40px;
+    display: flex;
+    text-align: center;
+    cursor: pointer;
+}
+
+.friend-list-element-selected:hover {
+    background-color: rgba(128, 128, 128, 0.863);
 }
 
 .friend-name {
     float: right;
     font-size: 14px;
+    pointer-events: none;
 }
 
 .friend-pic {
@@ -54,6 +70,7 @@
     max-width: 3em;
     max-height: 3em;
     border-radius: 40px;
+    pointer-events: none;
 }
 
 #user-box {

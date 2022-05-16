@@ -22,7 +22,7 @@ export default function Conversation({user}) {
 
     useEffect(() => {
         getAllMessages();
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         scrollToBottom();

@@ -26,10 +26,10 @@ function App() {
         {/* <div style={{position: "absolute", bottom: "0", marginLeft: "50vw", marginBottom: "20vw", backgroundColor: "red"}}>Can put errors here</div> */}
 
         <Routes>
-          <Route path="/" element={<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home isLoggedIn={isLoggedIn} user={user} setFriends={setFriends} />} />
           <Route path="/convo/:userId" element={<Conversation user={user} />} />
+          <Route path="/" element={<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
         </Routes>
       </div>
     </BrowserRouter>

@@ -66,7 +66,7 @@ export default function Home({isLoggedIn, user, setFriends}) {
     const filterUsers = (e) => {
         searchQuery = e.target.value;
 
-        if (searchQuery === 0) {
+        if (searchQuery.length === 0) {
             setUsers([...usersCopy]);
         } else {
             let filteredList = usersCopy.filter(user => user.username.includes(searchQuery));

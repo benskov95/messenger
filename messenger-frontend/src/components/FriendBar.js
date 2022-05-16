@@ -2,12 +2,13 @@ import { useNavigate } from "react-router";
 import "./css/FriendBar.css";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import apiFacade from "../facades/apiFacade";
 import friendFacade from "../facades/friendFacade";
 
 export default function FriendBar({isLoggedIn, setIsLoggedIn, user, setUser, friends, setFriends}) {
     const navigate = useNavigate();
+    const [currentlySelected, setCurrentlySelected] = useState();
 
     useEffect(() => {
         loadFriendList();
@@ -21,19 +22,34 @@ export default function FriendBar({isLoggedIn, setIsLoggedIn, user, setUser, fri
     }
 
     const goToHome = () => {
+        if (typeof currentlySelected !== "undefined") {
+            currentlySelected.target.className = "friend-list-element";
+        }
         navigate("/home");
     }
 
     const goToConvo = (e) => {
         let userId = e.target.getAttribute("name");
+        highlightSelectedFriend(e);
         navigate(`/convo/${userId}`);
     }
 
-    const logOut = () => {
+    const logout = () => {
+        if (typeof currentlySelected !== "undefined") {
+            currentlySelected.target.className = "friend-list-element";
+        }
         setIsLoggedIn(false);
         setUser({});
         apiFacade.setTokenInUse("");
         navigate("/");
+    }
+    
+    const highlightSelectedFriend = (e) => {
+        if (typeof currentlySelected !== "undefined") {
+            currentlySelected.target.className = "friend-list-element";
+        }
+        e.target.className = "friend-list-element-selected";
+        setCurrentlySelected(e);
     }
 
     return (
@@ -57,7 +73,7 @@ export default function FriendBar({isLoggedIn, setIsLoggedIn, user, setUser, fri
                         {isLoggedIn &&
                             <Popup position={"top left"} contentStyle={{width: "180px",borderWidth: "0px", backgroundColor: "rgba(33, 33, 33, 0.942)"}} trigger={<img id="user-pic" src={user.profilePic} alt="" />}>
                                 <div id="popup-menu">
-                                    <button id="logout-btn" onClick={logOut}>
+                                    <button id="logout-btn" onClick={logout}>
                                         Log out
                                     </button>
                                 </div>
