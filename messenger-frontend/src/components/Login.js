@@ -4,13 +4,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiFacade from "../facades/apiFacade";
 import jwtDecode from "jwt-decode";
-import printError from "../utils/error";
+import getMsgFromPromise from "../utils/error";
 import { userInitialState } from "../utils/initialStateObjects";
 
-export default function Login({isLoggedIn, setIsLoggedIn, setUser}) {
+export default function Login(props) {
     const [loading, setLoading] = useState(false);
     const [loginCreds, setLoginCreds] = useState(userInitialState);
-    const [status, setStatus] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,7 +21,7 @@ export default function Login({isLoggedIn, setIsLoggedIn, setUser}) {
     })
 
     const handleChange = (e) => {
-        setStatus("");
+        props.setError("");
         setLoginCreds({...loginCreds, [e.target.name]: e.target.value});
     }
 
@@ -33,11 +32,11 @@ export default function Login({isLoggedIn, setIsLoggedIn, setUser}) {
             let token = res.token;
             setLoginCreds(userInitialState);
             apiFacade.setTokenInUse(token);
-            setUser(jwtDecode(token));
+            props.setUser(jwtDecode(token));
             navigate("/home");
-            setIsLoggedIn(true);
+            props.setIsLoggedIn(true);
         } catch (e) {
-            printError(e, setStatus);
+            getMsgFromPromise(e, props.setError);
         }
         setLoading(false);
     }
@@ -56,7 +55,7 @@ export default function Login({isLoggedIn, setIsLoggedIn, setUser}) {
         <div>
             <SpinnerDotted size="20vh" style={{"marginTop": "25vh"}} color="orange" enabled={loading} />
             <h2 hidden={!loading}>Verifying, please wait...</h2>
-            <div id="login-box" hidden={isLoggedIn}>
+            <div id="login-box" hidden={props.isLoggedIn}>
                 <div hidden={loading}>
                     <h1 id="title">Bonjour</h1>
                     <input 
@@ -76,7 +75,6 @@ export default function Login({isLoggedIn, setIsLoggedIn, setUser}) {
 
                     <button id="register-btn" onClick={goToRegister}>Register</button>
                     <button id="login-btn" onClick={authenticateUser}>Log in</button>
-                    <p style={{color: "red"}}>{status}</p>
                 </div>
             </div>
         </div>

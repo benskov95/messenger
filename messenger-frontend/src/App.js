@@ -7,11 +7,13 @@ import Conversation from "./components/Conversation";
 import FriendBar from './components/FriendBar';
 import { BrowserRouter } from 'react-router-dom';
 import Register from './components/Register';
+import Error from './components/Error';
 
 function App() {
   const [user, setUser] = useState({});
   const [friends, setFriends] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [error, setError] = useState("");
 
   return (
     <BrowserRouter>
@@ -23,13 +25,14 @@ function App() {
         setUser={setUser} 
         friends={friends}
         setFriends={setFriends} />
-        {/* <div style={{position: "absolute", bottom: "0", marginLeft: "50vw", marginBottom: "20vw", backgroundColor: "red"}}>Can put errors here</div> */}
+
+        <Error error={error} />
 
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home isLoggedIn={isLoggedIn} user={user} setFriends={setFriends} />} />
           <Route path="/convo/:userId" element={<Conversation user={user} />} />
-          <Route path="/" element={<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
+          <Route path="/" element={<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUser={setUser} setError={setError} />} />
         </Routes>
       </div>
     </BrowserRouter>

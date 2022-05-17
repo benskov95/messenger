@@ -1,0 +1,36 @@
+
+@keyframes slidein {
+    from {
+        bottom: 0;
+        right: 0;
+        display: none;
+    }
+
+    to {
+        right: 30px;
+        bottom: 20px;
+    }
+}
+
+@keyframes fadeout {
+    0% {
+        opacity: 1;
+    }
+    
+    100% {
+        opacity: 0;
+    }
+}
+
+#error-box {
+    background-color: red;
+    bottom: 0;
+    right: 0;
+    font-size: 16px;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    text-align: left;
+    overflow-wrap: break-word;
+    animation: 1s slidein forwards, 2s 10s fadeout;
+}

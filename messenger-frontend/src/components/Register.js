@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { userInitialState } from "../utils/initialStateObjects";
 import apiFacade from "../facades/apiFacade";
 import { SpinnerDotted } from "spinners-react";
-import printError from "../utils/error";
+import getMsgFromPromise from "../utils/error";
 import "./css/Register.css";
 import "./css/Login.css";
 import { useNavigate } from "react-router";
@@ -36,7 +36,7 @@ export default function Register() {
             setNewUser(userInitialState);
             setLoading(false);
         } catch (e) {
-            printError(e, setStatus);
+            getMsgFromPromise(e, setStatus);
         }
     }
 

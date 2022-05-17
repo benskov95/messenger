@@ -24,7 +24,7 @@
     outline: 1px solid slategrey;
     border-radius: 40px;
     border-width: 0px;
-  }
+}
 
 @media only screen and (min-width: 1700px) {
     .main-box {

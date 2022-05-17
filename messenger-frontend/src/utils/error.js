@@ -1,7 +1,8 @@
-const printError = (promise, setError) => {
+
+const getMsgFromPromise = (promise, setError) => {
     promise.fullError.then(function (status) {
-      setError(`${status.message}`);
+      setError(status.message);
     });
   };
 
-export default printError;
+export default getMsgFromPromise;
