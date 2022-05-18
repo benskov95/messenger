@@ -3,8 +3,9 @@ import "./css/Base.css"
 import "./css/Home.css"
 import userFacade from "../facades/userFacade";
 import friendFacade from "../facades/friendFacade";
+import getMsgFromPromise from "../utils/error";
 
-export default function Home({isLoggedIn, user, setFriends}) {
+export default function Home(props) {
     const [usersShowing, setUsersShowing] = useState(true);
     const [users, setUsers] = useState([]);
     const [usersCopy, setUsersCopy] = useState([]);
@@ -14,10 +15,10 @@ export default function Home({isLoggedIn, user, setFriends}) {
     useEffect(() => {
         loadUsers();
         loadRequests();
-    }, [isLoggedIn])
+    }, [props.isLoggedIn]);
 
     const loadUsers = async () => {
-        if (isLoggedIn) {
+        if (props.isLoggedIn) {
             const res = await userFacade.getAllUsers();
             setUsers(res);
             setUsersCopy(res);
@@ -25,7 +26,7 @@ export default function Home({isLoggedIn, user, setFriends}) {
     }
 
     const loadRequests = async () => {
-        if (isLoggedIn) {
+        if (props.isLoggedIn) {
             const res = await friendFacade.getAllPendingRequests()
             setRequests(res);
         }
@@ -33,8 +34,8 @@ export default function Home({isLoggedIn, user, setFriends}) {
 
     const sendFriendRequest = async (e) => {
         let friendRequest = {
-            senderProfilePic: user.profilePic, 
-            senderName: user.username, 
+            senderProfilePic: props.user.profilePic, 
+            senderName: props.user.username, 
             receiverName: e.target.name
         }
 
@@ -42,7 +43,7 @@ export default function Home({isLoggedIn, user, setFriends}) {
             await friendFacade.sendRequest(friendRequest);
             await loadUsers();
         } catch (e) {
-            // print somewhere
+            getMsgFromPromise(e, props.setError)
         }
     }
 
@@ -55,7 +56,7 @@ export default function Home({isLoggedIn, user, setFriends}) {
             const res = await friendFacade.handleRequest(friendRequest);
             if (res.accepted) {
                 const res = await friendFacade.getAllFriends();
-                setFriends(res);
+                props.setFriends(res);
             }
             await loadRequests();
         } catch(e) {

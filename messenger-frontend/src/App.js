@@ -24,14 +24,15 @@ function App() {
         user={user} 
         setUser={setUser} 
         friends={friends}
-        setFriends={setFriends} />
+        setFriends={setFriends}
+        setError={setError} />
 
-        <Error error={error} />
+        <Error error={error} setError={setError} />
 
         <Routes>
-          <Route path="/register" element={<Register />} />
-          <Route path="/home" element={<Home isLoggedIn={isLoggedIn} user={user} setFriends={setFriends} />} />
-          <Route path="/convo/:userId" element={<Conversation user={user} />} />
+          <Route path="/register" element={<Register/>} />
+          <Route path="/home" element={<Home isLoggedIn={isLoggedIn} user={user} setFriends={setFriends} setError={setError} />} />
+          <Route path="/convo/:userId" element={<Conversation user={user} setError={setError} />} />
           <Route path="/" element={<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUser={setUser} setError={setError} />} />
         </Routes>
       </div>

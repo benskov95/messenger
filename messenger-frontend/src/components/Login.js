@@ -18,7 +18,7 @@ export default function Login(props) {
             // event listener removed when component is unmounted
             window.removeEventListener('keydown', detectEnterKeyPress);
         }
-    })
+    });
 
     const handleChange = (e) => {
         props.setError("");

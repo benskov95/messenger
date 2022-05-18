@@ -7,7 +7,7 @@
     }
 
     to {
-        right: 30px;
+        right: 20px;
         bottom: 20px;
     }
 }
@@ -29,8 +29,13 @@
     font-size: 16px;
     padding: 5px;
     border-radius: 5px;
+    width: 200px;
     position: absolute;
     text-align: left;
     overflow-wrap: break-word;
-    animation: 1s slidein forwards, 2s 10s fadeout;
+    animation: 0.5s slidein forwards, 1s 5s fadeout;
+}
+
+#hidden-error-box {
+    display: none;
 }

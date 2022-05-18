@@ -5,6 +5,7 @@ import "reactjs-popup/dist/index.css";
 import { useEffect, useState } from "react";
 import apiFacade from "../facades/apiFacade";
 import friendFacade from "../facades/friendFacade";
+import getMsgFromPromise from "../utils/error";
 
 export default function FriendBar(props) {
     const navigate = useNavigate();
@@ -16,8 +17,12 @@ export default function FriendBar(props) {
     
     const loadFriendList = async () => {
         if (props.isLoggedIn) {
-            const res = await friendFacade.getAllFriends();
-            props.setFriends(res);
+            try {
+                const res = await friendFacade.getAllFriends();
+                props.setFriends(res);
+            } catch (e) {
+                getMsgFromPromise(e, props.setError)
+            }
         } 
     }
 

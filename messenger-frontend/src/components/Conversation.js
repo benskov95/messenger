@@ -5,8 +5,9 @@ import { msgInitialState } from "../utils/initialStateObjects";
 import { useParams } from "react-router";
 import messageFacade from "../facades/messageFacade";
 import moment from "moment";
+import getMsgFromPromise from "../utils/error";
 
-export default function Conversation({user}) {
+export default function Conversation(props) {
     const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState(msgInitialState);
     const [defaultHeight, setDefaultHeight] = useState(""); // shitty solution, but couldn't get the message field to resize properly after hitting the enter key without it.
@@ -18,7 +19,7 @@ export default function Conversation({user}) {
         return function cleanupListener() {
             window.removeEventListener('keydown', sendMessage);
         }
-    })
+    });
 
     useEffect(() => {
         getAllMessages();
@@ -29,33 +30,43 @@ export default function Conversation({user}) {
     }, [messages]);
 
     const getAllMessages = async () => {
-        const res = await messageFacade.getAllMessages(userId);
-        setMessages(res);
-        scrollToBottom();
+        try {
+            const res = await messageFacade.getAllMessages(userId);
+            setMessages(res);
+            scrollToBottom();
+        } catch (e) {
+            getMsgFromPromise(e, props.setError);
+        }
     }
 
     const sendMessage = async (e) => {
         if ((e.key === "Enter" && !e.shiftKey) && newMessage.content.length > 0) {
             e.preventDefault();
             setDefaultHeight("20px");
-
-            prepMsg(user.username, userId);
-            await messageFacade.sendMessage(newMessage);
-            await getAllMessages();
-
+            let msg = prepMsg(props.user.username, userId);
             setNewMessage(msgInitialState);
+
+            try {
+                await messageFacade.sendMessage(msg);
+                await getAllMessages();
+            } catch (e) {
+                getMsgFromPromise(e, props.setError);
+            }
+
         }
     }
 
     const prepMsg = (sender, receiver) => {
-        newMessage.timestamp = moment().format('MMMM Do, HH:mm');
-        newMessage.senderName = sender;
-        newMessage.receiverName = receiver;
+        let msg = {...newMessage};
+        msg.timestamp = moment().format('MMMM Do, HH:mm');
+        msg.senderName = sender;
+        msg.receiverName = receiver;
+        return msg;
     }
 
     const handleChange = (e) => {
         setDefaultHeight("");
-        setNewMessage({...newMessage, [e.target.name]: e.target.value})
+        setNewMessage({...newMessage, [e.target.name]: e.target.value});
     }
 
     const scaleMessageField = (e) => {
@@ -78,7 +89,7 @@ export default function Conversation({user}) {
                     {messages.map(msg => {
                         return (
                             <div key={msg.id}>
-                                {msg.senderName === user.username ? 
+                                {msg.senderName === props.user.username ? 
                                 <div className="usr-msg-container">
                                     <p className="user-message">{msg.content}</p>
                                     <p className="user-message-date">{msg.timestamp}</p>

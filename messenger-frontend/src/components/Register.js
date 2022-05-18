@@ -21,7 +21,7 @@ export default function Register() {
             // event listener removed when component is unmounted
             window.removeEventListener('keydown', detectEnterKeyPress);
         }
-    })
+    });
 
     const handleChange = (e) => {
         setNewUser({...newUser, [e.target.name]: e.target.value})
