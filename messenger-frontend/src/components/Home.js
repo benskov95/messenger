@@ -19,16 +19,24 @@ export default function Home(props) {
 
     const loadUsers = async () => {
         if (props.isLoggedIn) {
-            const res = await userFacade.getAllUsers();
-            setUsers(res);
-            setUsersCopy(res);
+            try {
+                const res = await userFacade.getAllUsers();
+                setUsers(res);
+                setUsersCopy(res);
+            } catch (e) {
+                getMsgFromPromise(e, props.setError);
+            }
         }
     }
 
     const loadRequests = async () => {
         if (props.isLoggedIn) {
-            const res = await friendFacade.getAllPendingRequests()
-            setRequests(res);
+            try {
+                const res = await friendFacade.getAllPendingRequests()
+                setRequests(res);
+            } catch (e) {
+                getMsgFromPromise(e, props.setError);
+            }
         }
     }
 
@@ -60,7 +68,7 @@ export default function Home(props) {
             }
             await loadRequests();
         } catch(e) {
-            // print somewhere
+            getMsgFromPromise(e, props.setError);
         }
     }
 

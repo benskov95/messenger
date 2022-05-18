@@ -4,8 +4,8 @@ import "./css/Conversation.css";
 import { msgInitialState } from "../utils/initialStateObjects";
 import { useParams } from "react-router";
 import messageFacade from "../facades/messageFacade";
-import moment from "moment";
 import getMsgFromPromise from "../utils/error";
+import moment from "moment";
 
 export default function Conversation(props) {
     const [messages, setMessages] = useState([])
@@ -14,6 +14,7 @@ export default function Conversation(props) {
     const testRef = useRef(null);
     let {userId} = useParams();
 
+    console.log(messages)
     useEffect(() => {
         window.addEventListener('keydown', sendMessage);
         return function cleanupListener() {
@@ -32,41 +33,48 @@ export default function Conversation(props) {
     const getAllMessages = async () => {
         try {
             const res = await messageFacade.getAllMessages(userId);
-            setMessages(res);
+            setMessages(prepListForDisplay(res));
             scrollToBottom();
         } catch (e) {
             getMsgFromPromise(e, props.setError);
         }
     }
-
+    
     const sendMessage = async (e) => {
         if ((e.key === "Enter" && !e.shiftKey) && newMessage.content.length > 0) {
             e.preventDefault();
             setDefaultHeight("20px");
             let msg = prepMsg(props.user.username, userId);
             setNewMessage(msgInitialState);
-
+            
             try {
                 await messageFacade.sendMessage(msg);
                 await getAllMessages();
             } catch (e) {
                 getMsgFromPromise(e, props.setError);
             }
-
-        }
+        } 
+    }
+    
+    const handleChange = (e) => {
+        setDefaultHeight("");
+        setNewMessage({...newMessage, [e.target.name]: e.target.value});
     }
 
     const prepMsg = (sender, receiver) => {
         let msg = {...newMessage};
-        msg.timestamp = moment().format('MMMM Do, HH:mm');
         msg.senderName = sender;
         msg.receiverName = receiver;
         return msg;
     }
 
-    const handleChange = (e) => {
-        setDefaultHeight("");
-        setNewMessage({...newMessage, [e.target.name]: e.target.value});
+    const prepListForDisplay = (messageList) => {
+        messageList.sort((a, b) => a.timestamp - b.timestamp);
+        messageList.forEach(msg => {
+            msg.timestamp = moment(msg.timestamp).format('MMMM Do, HH:mm');
+        });
+
+        return messageList;
     }
 
     const scaleMessageField = (e) => {

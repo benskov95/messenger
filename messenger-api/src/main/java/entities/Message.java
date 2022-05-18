@@ -1,6 +1,7 @@
 package entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,7 +21,7 @@ public class Message implements Serializable {
     private int id;
     
     private String content;
-    private String msgTimestamp;
+    private long msgTimestamp;
     
     @ManyToOne
     private User sender;
@@ -30,9 +31,9 @@ public class Message implements Serializable {
 
     public Message() {}
 
-    public Message(String content, String msgTimestamp, User receiver) {
+    public Message(String content, User receiver) {
+        this.msgTimestamp = new Date().getTime();
         this.content = content;
-        this.msgTimestamp = msgTimestamp;
         this.receiver = receiver;
     }
     
@@ -52,11 +53,11 @@ public class Message implements Serializable {
         this.content = content;
     }
 
-    public String getMsgTimestamp() {
+    public long getMsgTimestamp() {
         return msgTimestamp;
     }
 
-    public void setMsgTimestamp(String msgTimestamp) {
+    public void setMsgTimestamp(long msgTimestamp) {
         this.msgTimestamp = msgTimestamp;
     }
 

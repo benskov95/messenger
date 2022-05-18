@@ -45,8 +45,13 @@ public class MessageFacade {
         }
     }
     
-    public MessageDTO sendMessage(MessageDTO messageDto) {
+    public MessageDTO sendMessage(MessageDTO messageDto) throws Exception {
         EntityManager em = emf.createEntityManager();
+        
+        if (messageDto.getContent().length() > 1000) {
+            throw new Exception("Your message is too long. Send it in parts or shorten it.");
+        }
+        
         User u1 = (User) em.createQuery("SELECT u FROM User u WHERE u.username =:username")
                 .setParameter("username", messageDto.getSenderName())
                 .getSingleResult();
@@ -54,7 +59,7 @@ public class MessageFacade {
                 .setParameter("username", messageDto.getReceiverName())
                 .getSingleResult();
 
-        Message message = new Message(messageDto.getContent(), messageDto.getTimestamp(), u2);
+        Message message = new Message(messageDto.getContent(), u2);
         u1.addMessage(message);
         
         try {
@@ -62,6 +67,8 @@ public class MessageFacade {
             em.persist(message);
             em.getTransaction().commit();
             return new MessageDTO(message);
+        } catch (Exception e) {
+            throw new Exception("Encountered an error when sending message. Try again later.");
         } finally {
             em.close();
         }

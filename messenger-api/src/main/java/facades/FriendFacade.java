@@ -25,7 +25,7 @@ public class FriendFacade {
         return instance;
     }
     
-    public List<FriendDTO> getAllFriends(String username) {
+    public List<FriendDTO> getAllFriends(String username) throws Exception {
         EntityManager em = emf.createEntityManager();
         List<FriendDTO> friendsDto = new ArrayList<>();
         
@@ -43,6 +43,8 @@ public class FriendFacade {
             }
 
             return friendsDto;            
+        } catch(Exception e) {
+            throw new Exception("Encountered an error when fetching friends. Try again later.");
         } finally {
             em.close();
         }

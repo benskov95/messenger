@@ -1,12 +1,13 @@
 package dto;
 
 import entities.Message;
+import java.util.Date;
 
 public class MessageDTO {
     
     private int id;
     private String content;
-    private String timestamp;
+    private long timestamp;
     private String senderName;
     private String receiverName;
 
@@ -36,11 +37,11 @@ public class MessageDTO {
         this.content = content;
     }
 
-    public String getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
