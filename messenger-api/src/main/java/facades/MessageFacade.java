@@ -3,6 +3,7 @@ package facades;
 import dto.MessageDTO;
 import entities.Message;
 import entities.User;
+import errorhandling.ApiException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -23,7 +24,7 @@ public class MessageFacade {
         return instance;
     }
     
-    public List<MessageDTO> getUserMessages(String loggedInUser, String selectedUser) {
+    public List<MessageDTO> getUserMessages(String loggedInUser, String selectedUser) throws ApiException {
         EntityManager em = emf.createEntityManager();
         List<MessageDTO> messagesDto = new ArrayList<>();
         
@@ -40,17 +41,17 @@ public class MessageFacade {
             }
 
             return messagesDto;
-        } finally {
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ApiException("Encountered an error when loading user messages. Try again later.");
+        }finally {
             em.close();
         }
     }
     
-    public MessageDTO sendMessage(MessageDTO messageDto) throws Exception {
+    public MessageDTO sendMessage(MessageDTO messageDto) throws ApiException {
         EntityManager em = emf.createEntityManager();
-        
-        if (messageDto.getContent().length() > 1000) {
-            throw new Exception("Your message is too long. Send it in parts or shorten it.");
-        }
+        validateMessage(messageDto);
         
         User u1 = (User) em.createQuery("SELECT u FROM User u WHERE u.username =:username")
                 .setParameter("username", messageDto.getSenderName())
@@ -68,10 +69,20 @@ public class MessageFacade {
             em.getTransaction().commit();
             return new MessageDTO(message);
         } catch (Exception e) {
-            throw new Exception("Encountered an error when sending message. Try again later.");
+            System.out.println(e.getMessage());
+            throw new ApiException("Encountered an error when sending message. Try again later.");
         } finally {
             em.close();
         }
+    }
+    
+    private void validateMessage(MessageDTO messageDto) throws ApiException {
+            if (messageDto.getContent().length() > 1000) {
+                throw new ApiException("Your message is too long. Send it in parts or shorten it.");
+            }
+            if (messageDto.getContent().trim().length() == 0) {
+                throw new ApiException("Message must be at least 1 character long");
+            }
     }
     
 }

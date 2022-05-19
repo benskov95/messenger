@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nimbusds.jose.JOSEException;
 import dto.MessageDTO;
+import errorhandling.ApiException;
 import facades.MessageFacade;
 import java.text.ParseException;
 import java.util.List;
@@ -30,7 +31,7 @@ public class MessageResource {
     @Path("{userId}")
     @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_JSON})
-    public String getUserMessages(@HeaderParam("x-access-token") String token, @PathParam("userId") String userId) throws ParseException, JOSEException, AuthenticationException {
+    public String getUserMessages(@HeaderParam("x-access-token") String token, @PathParam("userId") String userId) throws ParseException, JOSEException, AuthenticationException, ApiException {
         UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
         List<MessageDTO> messages = MESSAGE_FACADE.getUserMessages(user.getName(), userId);
         return GSON.toJson(messages);
@@ -40,7 +41,7 @@ public class MessageResource {
     @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public String sendMessage(String msg) {
+    public String sendMessage(String msg) throws ApiException {
         MessageDTO messageDto = GSON.fromJson(msg, MessageDTO.class);
         MessageDTO addedMsg = MESSAGE_FACADE.sendMessage(messageDto);
         return GSON.toJson(addedMsg);

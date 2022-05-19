@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nimbusds.jose.JOSEException;
 import dto.UserDTO;
+import errorhandling.ApiException;
 import facades.UserFacade;
 import java.text.ParseException;
 import security.errorhandling.AuthenticationException;
@@ -29,7 +30,7 @@ public class UserResource {
     @GET
     @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_JSON})
-    public String getUsers(@HeaderParam("x-access-token") String token) throws ParseException, JOSEException, AuthenticationException {
+    public String getUsers(@HeaderParam("x-access-token") String token) throws ParseException, JOSEException, AuthenticationException, ApiException {
         UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
         List<UserDTO> dtoList = USER_FACADE.getAllUsers(user.getName());
         return GSON.toJson(dtoList);
@@ -38,7 +39,7 @@ public class UserResource {
     @POST
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public String addUser(String user) throws  AuthenticationException {
+    public String addUser(String user) throws  AuthenticationException, ApiException {
         UserDTO userDTO = GSON.fromJson(user, UserDTO.class);
         UserDTO newUser = USER_FACADE.addUser(userDTO);
         return GSON.toJson(newUser);

@@ -14,6 +14,7 @@ export default function Register() {
     const [isSuccess, setIsSuccess] = useState(false);
     const [showPw, setShowPw] = useState(false);
     const navigate = useNavigate();
+    console.log(userInitialState)
 
     useEffect(() => {
         window.addEventListener('keydown', detectEnterKeyPress);
@@ -34,10 +35,12 @@ export default function Register() {
             setIsSuccess(true);
             setStatus("You have successfully registered your account. Go back to log in.");
             setNewUser(userInitialState);
-            setLoading(false);
+            console.log("ay")
         } catch (e) {
+            setIsSuccess(false);
             getMsgFromPromise(e, setStatus);
         }
+        setLoading(false);
     }
 
     const detectEnterKeyPress = (e) => {
@@ -63,6 +66,7 @@ export default function Register() {
                     <h1 id="title">Register</h1>
                     <input 
                     onChange={handleChange}
+                    value={newUser.username}
                     name="username"
                     className="login-input" 
                     placeholder="Enter username" />
@@ -71,6 +75,7 @@ export default function Register() {
 
                     <input 
                     onChange={handleChange}
+                    value={newUser.password}
                     name="password"
                     className="login-input" 
                     placeholder="Enter password" 

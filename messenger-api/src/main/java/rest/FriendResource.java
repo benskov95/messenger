@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.nimbusds.jose.JOSEException;
 import dto.FriendDTO;
 import dto.RequestDTO;
+import errorhandling.ApiException;
 import facades.FriendFacade;
 import java.text.ParseException;
 import java.util.List;
@@ -30,7 +31,7 @@ public class FriendResource {
     @GET
     @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_JSON})
-    public String getAllFriends(@HeaderParam("x-access-token") String token) throws ParseException, JOSEException, AuthenticationException {
+    public String getAllFriends(@HeaderParam("x-access-token") String token) throws ParseException, JOSEException, AuthenticationException, ApiException {
         UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
         List<FriendDTO> friends = FRIEND_FACADE.getAllFriends(user.getName());
         return GSON.toJson(friends);
@@ -40,7 +41,7 @@ public class FriendResource {
     @Path("requests")
     @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_JSON})
-    public String getAllPendingRequests(@HeaderParam("x-access-token") String token) throws ParseException, JOSEException, AuthenticationException {
+    public String getAllPendingRequests(@HeaderParam("x-access-token") String token) throws ParseException, JOSEException, AuthenticationException, ApiException {
         UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
         List<RequestDTO> requests = FRIEND_FACADE.getAllPendingRequests(user.getName());
         return GSON.toJson(requests);
@@ -50,7 +51,7 @@ public class FriendResource {
     @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public String sendRequest(String request) {
+    public String sendRequest(String request) throws ApiException {
         RequestDTO requestDto = GSON.fromJson(request, RequestDTO.class);
         RequestDTO addedReq = FRIEND_FACADE.sendFriendRequest(requestDto);
         return GSON.toJson(addedReq);
@@ -60,7 +61,7 @@ public class FriendResource {
     @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public String handleRequest(String request) {
+    public String handleRequest(String request) throws ApiException {
         RequestDTO requestDto = GSON.fromJson(request, RequestDTO.class);
         RequestDTO addedReq = FRIEND_FACADE.handleFriendRequest(requestDto);
         return GSON.toJson(addedReq);

@@ -4,7 +4,7 @@ import "./css/Conversation.css";
 import { msgInitialState } from "../utils/initialStateObjects";
 import { useParams } from "react-router";
 import messageFacade from "../facades/messageFacade";
-import getMsgFromPromise from "../utils/error";
+import displayError from "../utils/error";
 import moment from "moment";
 
 export default function Conversation(props) {
@@ -14,7 +14,6 @@ export default function Conversation(props) {
     const testRef = useRef(null);
     let {userId} = useParams();
 
-    console.log(messages)
     useEffect(() => {
         window.addEventListener('keydown', sendMessage);
         return function cleanupListener() {
@@ -36,7 +35,7 @@ export default function Conversation(props) {
             setMessages(prepListForDisplay(res));
             scrollToBottom();
         } catch (e) {
-            getMsgFromPromise(e, props.setError);
+            displayError(e, props.setError);
         }
     }
     
@@ -44,15 +43,15 @@ export default function Conversation(props) {
         if ((e.key === "Enter" && !e.shiftKey) && newMessage.content.length > 0) {
             e.preventDefault();
             setDefaultHeight("20px");
-            let msg = prepMsg(props.user.username, userId);
-            setNewMessage(msgInitialState);
             
             try {
+                let msg = prepMsg(props.user.username, userId);
                 await messageFacade.sendMessage(msg);
                 await getAllMessages();
             } catch (e) {
-                getMsgFromPromise(e, props.setError);
+                displayError(e, props.setError);
             }
+            setNewMessage(msgInitialState);
         } 
     }
     
@@ -65,6 +64,11 @@ export default function Conversation(props) {
         let msg = {...newMessage};
         msg.senderName = sender;
         msg.receiverName = receiver;
+
+        // check if msg content is only whitespaces
+        if (!msg.content.trim().length) {
+            throw "Message must be at least 1 character long.";
+        }
         return msg;
     }
 

@@ -5,6 +5,7 @@ import entities.Friend;
 import entities.FriendRequest;
 import entities.Role;
 import entities.User;
+import errorhandling.ApiException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -41,7 +42,7 @@ public class UserFacade {
         return user;
     }
 
-    public List<UserDTO> getAllUsers(String username) {
+    public List<UserDTO> getAllUsers(String username) throws ApiException {
         EntityManager em = emf.createEntityManager();
         List<UserDTO> userDTOlist = new ArrayList<>();
         
@@ -84,17 +85,20 @@ public class UserFacade {
             
             return userDTOlist;
             
-        } finally {
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw new ApiException("Encountered an error when loading users. Try again later.");
+        }finally {
             em.close();
         }
     }
 
-    public UserDTO addUser(UserDTO userDTO) throws  AuthenticationException {
+    public UserDTO addUser(UserDTO userDto) throws  AuthenticationException, ApiException {
         EntityManager em = emf.createEntityManager();
-        User user = new User(userDTO.getUsername(), userDTO.getPassword());
+        User user = new User(userDto.getUsername(), userDto.getPassword());
         addInitialRoles(em);
         setUserRole(user, em);
-        checkIfExists(user, em);
+        validateUser(userDto, em);
         
         try {
             em.getTransaction().begin();
@@ -102,34 +106,44 @@ public class UserFacade {
             em.getTransaction().commit();
             return new UserDTO(user);
 
-        } finally {
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw new ApiException("Encountered an error when registering. Try again later.");
+        }finally {
             em.close();
         }
     }
 
-    private void checkIfExists(User user, EntityManager em) throws AuthenticationException {
-       Query query = em.createQuery("SELECT u FROM User u WHERE u.username =:username ");
-       query.setParameter("username", user.getUsername());
-
-       List<User> result = query.getResultList();
-        if (result.size() > 0) {
-            throw new AuthenticationException("A user with this username already exists!");
-        }
-    }
-
-    public void setUserRole(User user, EntityManager em) {
+    private void setUserRole(User user, EntityManager em) {
         Query query = em.createQuery("SELECT r FROM Role r WHERE r.roleName =:role ");
         query.setParameter("role", "user");
         user.addRole((Role) query.getSingleResult());
     }
     
-    public void addInitialRoles(EntityManager em) {
+    private void addInitialRoles(EntityManager em) {
         Query query = em.createQuery("SELECT r FROM Role r");
         if (query.getResultList().isEmpty()) {
             em.getTransaction().begin();
             em.persist(new Role("user"));
             em.persist(new Role("admin"));
             em.getTransaction().commit();
+        }
+    }
+    
+    private void validateUser(UserDTO userDto, EntityManager em) throws ApiException {
+        // have to use dto because password gets hashed in user entity constructor, so can't accurately check length.
+        List<User> resList = em.createQuery("SELECT u FROM User u WHERE u.username =:username")
+                .setParameter("username", userDto.getUsername())
+                .getResultList();
+        
+        if (resList.size() > 0) {
+            throw new ApiException("This username is taken. Try another.");
+        }
+        if (userDto.getUsername().length() < 5) {
+            throw new ApiException("Username must be 5 or more characters long.");
+        }
+        if (userDto.getPassword().length() < 5) {
+            throw new ApiException("Password must be 5 or more characters long.");
         }
     }
     

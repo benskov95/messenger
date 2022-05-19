@@ -5,6 +5,7 @@ import dto.RequestDTO;
 import entities.Friend;
 import entities.FriendRequest;
 import entities.User;
+import errorhandling.ApiException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -25,7 +26,7 @@ public class FriendFacade {
         return instance;
     }
     
-    public List<FriendDTO> getAllFriends(String username) throws Exception {
+    public List<FriendDTO> getAllFriends(String username) throws ApiException {
         EntityManager em = emf.createEntityManager();
         List<FriendDTO> friendsDto = new ArrayList<>();
         
@@ -44,13 +45,14 @@ public class FriendFacade {
 
             return friendsDto;            
         } catch(Exception e) {
-            throw new Exception("Encountered an error when fetching friends. Try again later.");
+            System.out.println(e.getMessage());
+            throw new ApiException("Encountered an error when loading friends. Try again later.");
         } finally {
             em.close();
         }
     }
     
-    public List<RequestDTO> getAllPendingRequests(String username) {
+    public List<RequestDTO> getAllPendingRequests(String username) throws ApiException {
         EntityManager em = emf.createEntityManager();
         List<RequestDTO> requestsDto = new ArrayList<>();
         
@@ -64,12 +66,15 @@ public class FriendFacade {
             }
 
             return requestsDto;
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw new ApiException("Encountered an error when loading friend requests. Try again later.");
         } finally {
             em.close();
         }
     }
     
-    public RequestDTO sendFriendRequest(RequestDTO requestDto) {
+    public RequestDTO sendFriendRequest(RequestDTO requestDto) throws ApiException {
         EntityManager em = emf.createEntityManager();
         User u1 = (User) em.createQuery("SELECT u FROM User u WHERE u.username =:username")
                 .setParameter("username", requestDto.getSenderName())
@@ -86,12 +91,15 @@ public class FriendFacade {
             em.persist(request);
             em.getTransaction().commit();
             return new RequestDTO(request);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw new ApiException("Encountered an error when sending friend request. Try again later.");
         } finally {
             em.close();
         }
     }
 
-    public RequestDTO handleFriendRequest(RequestDTO requestDto) {
+    public RequestDTO handleFriendRequest(RequestDTO requestDto) throws ApiException {
         EntityManager em = emf.createEntityManager();
         FriendRequest request = (FriendRequest) em.createQuery("SELECT r FROM FriendRequest r where r.id =:id")
                 .setParameter("id", requestDto.getId())
@@ -118,7 +126,10 @@ public class FriendFacade {
             
             em.getTransaction().commit();
             return new RequestDTO(request);
-        } finally {
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw new ApiException("Encountered an error when handling friend request. Try again later.");
+        }finally {
             em.close();
         }
     }
