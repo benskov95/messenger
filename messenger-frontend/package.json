@@ -1,11 +1,9 @@
 {
   "name": "messenger",
+  "author": "benskov95",
   "version": "0.1.0",
-  "homepage": "./",
+  "homepage": ".",
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.1.1",
-    "@testing-library/user-event": "^13.5.0",
     "concurrently": "^7.1.0",
     "electron-is-dev": "^2.0.0",
     "jwt-decode": "^3.1.2",
@@ -36,8 +34,7 @@
     "productName": "Messenger",
     "extends": null,
     "files": [
-      "build/**/*",
-      "node_modules/**/*"
+      "build/**/*"
     ],
     "publish": {
       "provider": "github",
@@ -68,7 +65,6 @@
   },
   "devDependencies": {
     "electron": "^18.2.0",
-    "electron-builder": "^23.0.3",
-    "electron-is-dev": "^2.0.0"
+    "electron-builder": "^23.0.3"
   }
 }
