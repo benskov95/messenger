@@ -33,17 +33,17 @@ public class EMF_Creator {
     private static EntityManagerFactory createEntityManagerFactory(boolean isTest) {
 
         
-        boolean isDeployed = (System.getenv("DEPLOYED") != null);
+        boolean isDeployed = (System.getProperty("DEPLOYED") != null);
         if (isDeployed) {
             /* Strategy for deployment */
             System.out.println("USING ENVIRONMENT VARIABLES");
-            System.out.println("DEPLOYED       -->" + System.getenv("DEPLOYED"));
-            System.out.println("USER           -->" + System.getenv("USER"));
-            System.out.println("PW             -->" + System.getenv("PW"));
-            System.out.println("CONNECTION_STR -->" + System.getenv("CONNECTION_STR"));
-            String user = System.getenv("USER");
-            String pw = System.getenv("PW");
-            String connection_str = System.getenv("CONNECTION_STR_CA3"); // change this for your own project
+            System.out.println("DEPLOYED       -->" + System.getProperty("DEPLOYED"));
+            System.out.println("USER           -->" + System.getProperty("USER"));
+            System.out.println("PW             -->" + System.getProperty("PW"));
+            System.out.println("CONNECTION_STR -->" + System.getProperty("CONNECTION_STR"));
+            String user = System.getProperty("USER");
+            String pw = System.getProperty("PW");
+            String connection_str = System.getProperty("CONNECTION_STR"); // change this for your own project
             Properties props = new Properties();
             props.setProperty("javax.persistence.jdbc.user", user);
             props.setProperty("javax.persistence.jdbc.password", pw);
