@@ -1,13 +1,9 @@
 package dto;
 
-import entities.Friend;
-
 public class FriendDTO {
     
     private String username;
     private String profilePic;
-
-    public FriendDTO() {}
     
     public FriendDTO(String username, String profilePic) {
         this.username = username;

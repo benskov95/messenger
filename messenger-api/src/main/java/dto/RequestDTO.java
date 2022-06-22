@@ -9,8 +9,6 @@ public class RequestDTO {
     private String senderName;
     private String receiverName;
     private boolean accepted;
-
-    public RequestDTO() {}
     
     public RequestDTO(FriendRequest request) {
         this.id = request.getId();

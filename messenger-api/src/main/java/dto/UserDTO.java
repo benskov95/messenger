@@ -7,8 +7,10 @@ public class UserDTO {
     private String username;
     private String profilePic;
     private String password;
-
-    public UserDTO() {}
+    
+    public UserDTO(String username) {
+        this.username = username;
+    }
     
     public UserDTO(User user) {
         this.username = user.getUsername();

@@ -10,8 +10,6 @@ public class MessageDTO {
     private long timestamp;
     private String senderName;
     private String receiverName;
-
-    public MessageDTO() {}
     
     public MessageDTO(Message msg) {
         this.id = msg.getId();

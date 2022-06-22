@@ -6,12 +6,13 @@ import { useParams } from "react-router";
 import messageFacade from "../facades/messageFacade";
 import displayError from "../utils/error";
 import moment from "moment";
+import useChat from "../useChat";
 
 export default function Conversation(props) {
     const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState(msgInitialState);
     const [defaultHeight, setDefaultHeight] = useState(""); // shitty solution, but couldn't get the message field to resize properly after hitting the enter key without it.
-    const testRef = useRef(null);
+    const viewRef = useRef(null);
     let {userId} = useParams();
 
     useEffect(() => {
@@ -91,7 +92,7 @@ export default function Conversation(props) {
     }
 
     const scrollToBottom = () => {
-        testRef.current?.scrollIntoView({behavior: "smooth"})
+        viewRef.current?.scrollIntoView({behavior: "smooth"})
     }
 
     return (
@@ -127,7 +128,7 @@ export default function Conversation(props) {
                 placeholder="Send a message"
                 value={newMessage.content} />
             </div>
-            <div ref={testRef} />
+            <div ref={viewRef} />
         </div>
     )
 }

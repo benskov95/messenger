@@ -20,15 +20,15 @@ public class Message implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
-    private String content;
-    private long msgTimestamp;
-    
     @ManyToOne
     private User sender;
     
     @OneToOne
     private User receiver;
 
+    private String content;
+    private long msgTimestamp;
+    
     public Message() {}
 
     public Message(String content, User receiver) {
