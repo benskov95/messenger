@@ -2,16 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import "./css/Base.css";
 import "./css/Conversation.css";
 import { msgInitialState } from "../utils/initialStateObjects";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import messageFacade from "../facades/messageFacade";
 import displayError from "../utils/error";
 import moment from "moment";
-import useChat from "../useChat";
+import {io} from 'socket.io-client';
 
 export default function Conversation(props) {
     const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState(msgInitialState);
     const [defaultHeight, setDefaultHeight] = useState(""); // shitty solution, but couldn't get the message field to resize properly after hitting the enter key without it.
+    const socket = useRef(null);
     const viewRef = useRef(null);
     let {userId} = useParams();
 
@@ -23,12 +24,39 @@ export default function Conversation(props) {
     });
 
     useEffect(() => {
+        socket.current = io(process.env.REACT_APP_CHATROOM_URL, {transports: ['websocket']});
+        socket.current.on("connect", () => {
+            socket.current.emit("create", createRoomId(), props.user.username);
+            socket.current.on("reload", () => {
+                getAllMessages();
+            })
+        })
+        return function disconnectSocket() {
+            socket.current.emit("end", props.user.username);
+            socket.current = null;
+        }
+    }, []);
+
+    useEffect(() => {
         getAllMessages();
     }, [userId]);
 
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    const createRoomId = () => {
+        let list = [];
+        list.push(props.user.username);
+        list.push(userId);
+        list.sort();
+        return (list[0] + list[1])
+    }
+
+    const handleChange = (e) => {
+        setDefaultHeight("");
+        setNewMessage({...newMessage, [e.target.name]: e.target.value});
+    }
 
     const getAllMessages = async () => {
         try {
@@ -39,7 +67,7 @@ export default function Conversation(props) {
             displayError(e, props.setError);
         }
     }
-    
+
     const sendMessage = async (e) => {
         if ((e.key === "Enter" && !e.shiftKey) && newMessage.content.length > 0) {
             e.preventDefault();
@@ -48,40 +76,37 @@ export default function Conversation(props) {
             try {
                 let msg = prepMsg(props.user.username, userId);
                 await messageFacade.sendMessage(msg);
-                await getAllMessages();
+                socket.current.emit("newMsg", props.user.username, msg.receiverName);
+                getAllMessages();
             } catch (e) {
+                console.log(e)
                 displayError(e, props.setError);
             }
             setNewMessage(msgInitialState);
         } 
     }
     
-    const handleChange = (e) => {
-        setDefaultHeight("");
-        setNewMessage({...newMessage, [e.target.name]: e.target.value});
-    }
-
     const prepMsg = (sender, receiver) => {
         let msg = {...newMessage};
         msg.senderName = sender;
         msg.receiverName = receiver;
-
+        
         // check if msg content is only whitespaces
         if (!msg.content.trim().length) {
             throw "Message must be at least 1 character long.";
         }
         return msg;
     }
-
+    
     const prepListForDisplay = (messageList) => {
         messageList.sort((a, b) => a.timestamp - b.timestamp);
         messageList.forEach(msg => {
             msg.timestamp = moment(msg.timestamp).format('MMMM Do, HH:mm');
         });
-
+        
         return messageList;
     }
-
+    
     const scaleMessageField = (e) => {
         e.target.style.height = "inherit";
         e.target.style.height = `${e.target.scrollHeight - 10}px`;

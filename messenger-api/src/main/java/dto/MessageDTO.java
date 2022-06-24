@@ -6,6 +6,7 @@ import java.util.Date;
 public class MessageDTO {
     
     private int id;
+    private boolean msgRead;
     private String content;
     private long timestamp;
     private String senderName;
@@ -13,6 +14,7 @@ public class MessageDTO {
     
     public MessageDTO(Message msg) {
         this.id = msg.getId();
+        this.msgRead = msg.isMsgRead();
         this.content = msg.getContent();
         this.timestamp = msg.getMsgTimestamp();
         this.senderName = msg.getSender().getUsername();
@@ -25,6 +27,14 @@ public class MessageDTO {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isMsgRead() {
+        return msgRead;
+    }
+
+    public void setMsgRead(boolean msgRead) {
+        this.msgRead = msgRead;
     }
 
     public String getContent() {

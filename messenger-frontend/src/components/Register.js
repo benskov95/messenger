@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { userInitialState } from "../utils/initialStateObjects";
 import apiFacade from "../facades/apiFacade";
 import { SpinnerDotted } from "spinners-react";
-import getMsgFromPromise from "../utils/error";
+import displayError from "../utils/error";
 import "./css/Register.css";
 import "./css/Login.css";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
     const [loading, setLoading] = useState(false);
@@ -14,7 +14,6 @@ export default function Register() {
     const [isSuccess, setIsSuccess] = useState(false);
     const [showPw, setShowPw] = useState(false);
     const navigate = useNavigate();
-    console.log(userInitialState)
 
     useEffect(() => {
         window.addEventListener('keydown', detectEnterKeyPress);
@@ -38,7 +37,7 @@ export default function Register() {
             console.log("ay")
         } catch (e) {
             setIsSuccess(false);
-            getMsgFromPromise(e, setStatus);
+            displayError(e, setStatus);
         }
         setLoading(false);
     }

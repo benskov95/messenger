@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { Route, Routes } from 'react-router';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import './root-css/App.css';
 import Home from './components/Home';
 import Login from "./components/Login"
 import Conversation from "./components/Conversation";
 import FriendBar from './components/FriendBar';
-import { HashRouter } from 'react-router-dom';
 import Register from './components/Register';
 import Error from './components/Error';
 import NotFound from "./components/NotFound";

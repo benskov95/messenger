@@ -10,13 +10,13 @@
     "moment": "^2.29.3",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "reactjs-popup": "^2.0.5",
+    "socket.io": "^4.5.1",
+    "socket.io-client": "^4.5.1",
     "spinners-react": "^1.0.7",
-    "wait-on": "^6.0.1",
-    "web-vitals": "^2.1.4"
+    "wait-on": "^6.0.1"
   },
   "main": "public/electron.js",
   "scripts": {

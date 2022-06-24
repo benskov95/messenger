@@ -18,10 +18,8 @@ import security.JWTAuthenticationFilter;
 import security.UserPrincipal;
 import security.errorhandling.AuthenticationException;
 
-
 @Path("friend")
 public class FriendResource {
-
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();

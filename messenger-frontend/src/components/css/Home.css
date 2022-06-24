@@ -1,6 +1,6 @@
 
 #search-bar {
-    margin: 50px 0px 10px 0px;
+    margin: 50px 0px 10px -10px;
     border-radius: 20px;
     border-width: 0px;
     height: 20px
@@ -91,6 +91,30 @@
     background-color: darkred;
 }
 
+#option-btn-container {
+    display: flex;
+    justify-content: center;
+}
+
+#refresh-btn {
+    border-radius: 50px;
+    margin-right: 10px;
+    background-color: orange;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+#refresh-btn:hover {
+    background-color: darkorange;
+}
+
+#refresh-btn-img {
+    width: 20px;
+    height: 20px;
+    margin-top: 3px;
+}
+
 #tab-btn {
     width: 110px;
     margin: 0px 10px 5px 0px;
@@ -106,10 +130,6 @@
     border-radius: 20px;
     border-width: 0px;
     height: 25px;
-}
-
-#toggled-btn:hover {
-    background-color: rgb(133, 92, 16);
 }
 
 #empty-list-text {

@@ -17,10 +17,8 @@ import java.util.List;
 import security.JWTAuthenticationFilter;
 import security.UserPrincipal;
 
-
 @Path("user")
 public class UserResource {
-
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();

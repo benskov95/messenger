@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nimbusds.jose.JOSEException;
 import dto.MessageDTO;
+import dto.UnreadMsgCountDTO;
 import errorhandling.ApiException;
 import facades.MessageFacade;
 import java.text.ParseException;
@@ -17,10 +18,8 @@ import security.JWTAuthenticationFilter;
 import security.UserPrincipal;
 import security.errorhandling.AuthenticationException;
 
-
 @Path("message")
 public class MessageResource {
-
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -33,18 +32,30 @@ public class MessageResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String getUserMessages(@HeaderParam("x-access-token") String token, @PathParam("userId") String userId) throws ParseException, JOSEException, AuthenticationException, ApiException {
         UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
-        List<MessageDTO> messages = MESSAGE_FACADE.getUserMessages(user.getName(), userId);
-        return GSON.toJson(messages);
+        List<MessageDTO> messagesDto = MESSAGE_FACADE.getUserMessages(user.getName(), userId);
+        return GSON.toJson(messagesDto);
     }
             
+    @GET
+    @Path("unread-count")
+    @RolesAllowed("user")
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getNumberOfUnreadMessagesByUser(@HeaderParam("x-access-token") String token) throws ParseException, JOSEException, AuthenticationException, ApiException {
+        UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
+        List<UnreadMsgCountDTO> unreadDto = MESSAGE_FACADE.getNumberOfUnreadMessagesByUser(user.getName());
+        return GSON.toJson(unreadDto);
+    }
+    
     @POST
     @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public String sendMessage(String msg) throws ApiException {
+    public String sendMessage(@HeaderParam("x-access-token") String token, String msg) throws ApiException, ParseException, JOSEException, AuthenticationException {
+        UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
         MessageDTO messageDto = GSON.fromJson(msg, MessageDTO.class);
-        MessageDTO addedMsg = MESSAGE_FACADE.sendMessage(messageDto);
-        return GSON.toJson(addedMsg);
+        MessageDTO addedMessageDto = MESSAGE_FACADE.sendMessage(messageDto, user.getName());
+        return GSON.toJson(addedMessageDto);
     }
+    
     
 }

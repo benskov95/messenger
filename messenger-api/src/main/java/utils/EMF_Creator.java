@@ -35,7 +35,6 @@ public class EMF_Creator {
         
         boolean isDeployed = (System.getProperty("DEPLOYED") != null);
         if (isDeployed) {
-            /* Strategy for deployment */
             System.out.println("USING ENVIRONMENT VARIABLES");
             System.out.println("DEPLOYED       -->" + System.getProperty("DEPLOYED"));
             System.out.println("USER           -->" + System.getProperty("USER"));
@@ -43,22 +42,18 @@ public class EMF_Creator {
             System.out.println("CONNECTION_STR -->" + System.getProperty("CONNECTION_STR"));
             String user = System.getProperty("USER");
             String pw = System.getProperty("PW");
-            String connection_str = System.getProperty("CONNECTION_STR"); // change this for your own project
+            String connection_str = System.getProperty("CONNECTION_STR"); 
             Properties props = new Properties();
             props.setProperty("javax.persistence.jdbc.user", user);
             props.setProperty("javax.persistence.jdbc.password", pw);
             props.setProperty("javax.persistence.jdbc.url", connection_str);
             props.setProperty("javax.persistence.jdbc.driver", "com.mysql.cj.jdbc.Driver");
             
-            //Sets the production log-level to show only potential problems
             props.setProperty("eclipselink.logging.level","WARNING");
             props.setProperty("eclipselink.logging.level.sql","WARNING");
             return Persistence.createEntityManagerFactory("pu", props);
         }
 
-        /* Strategy for dev and test
-           Uses the two persistence units declared in persistence.xml
-         */
         String puName = isTest || System.getProperty("IS_INTEGRATION_TEST_WITH_DB") != null ? "puTest" : "pu"; //Only legal names
         if (puName.equals("puTest")) {
             System.out.println("Using the TEST database via persistence-unit --> puTest ");
@@ -70,11 +65,6 @@ public class EMF_Creator {
          emf =  Persistence.createEntityManagerFactory(puName, null);
        
         } catch (javax.persistence.PersistenceException ex){
-            System.out.println("##########################################################");
-            System.out.println("######      ERROR Creating a persistence Unit       ######");
-            System.out.println("###### Have you started the dev and test databases? ######");
-            System.out.println("######          (docker-compose up -d )             ######");
-            System.out.println("##########################################################");
             throw ex; 
         }
          return emf;

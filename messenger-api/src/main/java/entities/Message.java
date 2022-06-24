@@ -28,6 +28,7 @@ public class Message implements Serializable {
 
     private String content;
     private long msgTimestamp;
+    private boolean msgRead = false;
     
     public Message() {}
 
@@ -76,5 +77,13 @@ public class Message implements Serializable {
     public void setReceiver(User receiver) {
         this.receiver = receiver;
     }
+
+    public boolean isMsgRead() {
+        return msgRead;
+    }
+
+    public void setMsgRead(boolean msgRead) {
+        this.msgRead = msgRead;
+    } 
     
 }

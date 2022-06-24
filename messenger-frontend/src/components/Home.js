@@ -3,7 +3,8 @@ import "./css/Base.css"
 import "./css/Home.css"
 import userFacade from "../facades/userFacade";
 import friendFacade from "../facades/friendFacade";
-import getMsgFromPromise from "../utils/error";
+import displayError from "../utils/error";
+import reloadIcon from "../utils/icons/reload-icon.png";
 
 export default function Home(props) {
     const [usersShowing, setUsersShowing] = useState(true);
@@ -13,29 +14,19 @@ export default function Home(props) {
     let searchQuery = "";
     
     useEffect(() => {
-        loadUsers();
-        loadRequests();
+        loadData();
     }, [props.isLoggedIn]);
 
-    const loadUsers = async () => {
+    const loadData = async () => {
         if (props.isLoggedIn) {
             try {
-                const res = await userFacade.getAllUsers();
-                setUsers(res);
-                setUsersCopy(res);
+                const allUsers = await userFacade.getAllUsers();
+                const allRequests = await friendFacade.getAllPendingRequests();
+                setUsers(allUsers);
+                setUsersCopy(allUsers);
+                setRequests(allRequests);
             } catch (e) {
-                getMsgFromPromise(e, props.setError);
-            }
-        }
-    }
-
-    const loadRequests = async () => {
-        if (props.isLoggedIn) {
-            try {
-                const res = await friendFacade.getAllPendingRequests()
-                setRequests(res);
-            } catch (e) {
-                getMsgFromPromise(e, props.setError);
+                displayError(e, props.setError);
             }
         }
     }
@@ -49,9 +40,9 @@ export default function Home(props) {
 
         try {
             await friendFacade.sendRequest(friendRequest);
-            await loadUsers();
+            await loadData();
         } catch (e) {
-            getMsgFromPromise(e, props.setError)
+            displayError(e, props.setError)
         }
     }
 
@@ -66,9 +57,9 @@ export default function Home(props) {
                 const res = await friendFacade.getAllFriends();
                 props.setFriends(res);
             }
-            await loadRequests();
+            await loadData();
         } catch(e) {
-            getMsgFromPromise(e, props.setError);
+            displayError(e, props.setError);
         }
     }
 
@@ -95,8 +86,13 @@ export default function Home(props) {
         <div className="main-box">
             <input placeholder="Search..." id="search-bar" onChange={filterUsers} />
             <br />
-            <button name="tab1" id={usersShowing ? "toggled-btn" : "tab-btn"} onClick={determineListToShow}>All users</button>
-            <button name="tab2" id={usersShowing ? "tab-btn" : "toggled-btn"} onClick={determineListToShow}>Friend requests</button>
+            <div id="option-btn-container">
+                <button name="tab1" id={usersShowing ? "toggled-btn" : "tab-btn"} onClick={determineListToShow}>All users</button>
+                <div id="refresh-btn" onClick={loadData}>
+                    <img id="refresh-btn-img" src={reloadIcon} alt="" />
+                </div>
+                <button name="tab2" id={usersShowing ? "tab-btn" : "toggled-btn"} onClick={determineListToShow}>Friend requests</button>
+            </div>
             <ul className="user-list" hidden={!usersShowing}>
                 {users.length > 0 ? 
                 <div>

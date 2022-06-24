@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiFacade from "../facades/apiFacade";
 import jwtDecode from "jwt-decode";
-import getMsgFromPromise from "../utils/error";
+import displayError from "../utils/error";
 import { userInitialState } from "../utils/initialStateObjects";
 
 export default function Login(props) {
@@ -36,7 +36,7 @@ export default function Login(props) {
             navigate("/home");
             props.setIsLoggedIn(true);
         } catch (e) {
-            getMsgFromPromise(e, props.setError);
+            displayError(e, props.setError);
         }
         setLoading(false);
     }

@@ -44,7 +44,7 @@ public class UserFacade {
 
     public List<UserDTO> getAllUsers(String username) throws ApiException {
         EntityManager em = emf.createEntityManager();
-        List<UserDTO> userDTOlist = new ArrayList<>();
+        List<UserDTO> userDTOlist = new ArrayList();
         
         try { 
             List<User> userList = em.createQuery("SELECT u FROM User u WHERE u.username <> :username")

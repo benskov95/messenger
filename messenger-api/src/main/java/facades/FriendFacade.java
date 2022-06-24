@@ -28,7 +28,7 @@ public class FriendFacade {
     
     public List<FriendDTO> getAllFriends(String username) throws ApiException {
         EntityManager em = emf.createEntityManager();
-        List<FriendDTO> friendsDto = new ArrayList<>();
+        List<FriendDTO> friendsDto = new ArrayList();
         
         try {
             List<Friend> friends = em.createQuery("SELECT f From Friend f WHERE f.owner.username =:user OR f.friend.username =:user")
@@ -54,7 +54,7 @@ public class FriendFacade {
     
     public List<RequestDTO> getAllPendingRequests(String username) throws ApiException {
         EntityManager em = emf.createEntityManager();
-        List<RequestDTO> requestsDto = new ArrayList<>();
+        List<RequestDTO> requestsDto = new ArrayList();
         
         try {
             List<FriendRequest> requests = em.createQuery("SELECT r From FriendRequest r WHERE r.receiver.username =:user AND r.accepted = false")
@@ -76,17 +76,17 @@ public class FriendFacade {
     
     public RequestDTO sendFriendRequest(RequestDTO requestDto) throws ApiException {
         EntityManager em = emf.createEntityManager();
-        User u1 = (User) em.createQuery("SELECT u FROM User u WHERE u.username =:username")
-                .setParameter("username", requestDto.getSenderName())
-                .getSingleResult();
-        User u2 = (User) em.createQuery("SELECT u FROM User u WHERE u.username =:username")
-                .setParameter("username", requestDto.getReceiverName())
-                .getSingleResult();
-
-        FriendRequest request = new FriendRequest(u2);
-        u1.addRequest(request);
         
         try {
+            User u1 = (User) em.createQuery("SELECT u FROM User u WHERE u.username =:username")
+                    .setParameter("username", requestDto.getSenderName())
+                    .getSingleResult();
+            User u2 = (User) em.createQuery("SELECT u FROM User u WHERE u.username =:username")
+                    .setParameter("username", requestDto.getReceiverName())
+                    .getSingleResult();
+
+            FriendRequest request = new FriendRequest(u2);
+            u1.addRequest(request);
             em.getTransaction().begin();
             em.persist(request);
             em.getTransaction().commit();
@@ -101,11 +101,12 @@ public class FriendFacade {
 
     public RequestDTO handleFriendRequest(RequestDTO requestDto) throws ApiException {
         EntityManager em = emf.createEntityManager();
-        FriendRequest request = (FriendRequest) em.createQuery("SELECT r FROM FriendRequest r where r.id =:id")
-                .setParameter("id", requestDto.getId())
-                .getSingleResult();
         
         try {
+            FriendRequest request = (FriendRequest) em.createQuery("SELECT r FROM FriendRequest r where r.id =:id")
+                    .setParameter("id", requestDto.getId())
+                    .getSingleResult();
+            
             em.getTransaction().begin();
             
             if (requestDto.isAccepted()) {
