@@ -74,9 +74,9 @@ public class FriendFacade {
         }
     }
     
-    public RequestDTO sendFriendRequest(RequestDTO requestDto) throws ApiException {
+    public RequestDTO sendFriendRequest(RequestDTO requestDto, String username) throws ApiException {
         EntityManager em = emf.createEntityManager();
-        
+        validateMessage(requestDto, username);
         try {
             User u1 = (User) em.createQuery("SELECT u FROM User u WHERE u.username =:username")
                     .setParameter("username", requestDto.getSenderName())
@@ -103,7 +103,7 @@ public class FriendFacade {
         EntityManager em = emf.createEntityManager();
         
         try {
-            FriendRequest request = (FriendRequest) em.createQuery("SELECT r FROM FriendRequest r where r.id =:id")
+            FriendRequest request = (FriendRequest) em.createQuery("SELECT r FROM FriendRequest r WHERE r.id =:id")
                     .setParameter("id", requestDto.getId())
                     .getSingleResult();
             
@@ -132,6 +132,12 @@ public class FriendFacade {
             throw new ApiException("Encountered an error when handling friend request. Try again later.");
         }finally {
             em.close();
+        }
+    }
+    
+    private void validateMessage(RequestDTO requestDto, String username) throws ApiException {
+        if (!requestDto.getSenderName().equals(username)) {
+            throw new ApiException("Sender does not match logged in user.");
         }
     }
     

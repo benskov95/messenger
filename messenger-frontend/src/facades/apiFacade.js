@@ -1,4 +1,3 @@
-import URL from "../utils/settings";
 
 export function handleHttpErrors(res) {
   if (!res.ok) {
@@ -24,13 +23,21 @@ const apiFacade = () => {
     };
 
     const login = async (user) => {
-        const response = await fetch(URL + "/api/login", makeOptions("POST", true, user));
+        const response = await fetch
+        (
+            process.env.REACT_APP_API_URL + "/api/login", 
+            makeOptions("POST", true, user)
+        );
         const result = handleHttpErrors(response);
         return result;
     };
 
     const register = async (user) => {
-        const response = await fetch(URL + "/api/user", makeOptions("POST", false, user));
+        const response = await fetch
+        (
+            process.env.REACT_APP_API_URL + "/api/user", 
+            makeOptions("POST", false, user)
+        );
         const result = handleHttpErrors(response);
         return result;
     }

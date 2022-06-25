@@ -49,20 +49,21 @@ public class FriendResource {
     @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public String sendRequest(String request) throws ApiException {
+    public String sendRequest(@HeaderParam("x-access-token") String token, String request) throws ApiException, ParseException, JOSEException, AuthenticationException {
+        UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
         RequestDTO requestDto = GSON.fromJson(request, RequestDTO.class);
-        RequestDTO addedReq = FRIEND_FACADE.sendFriendRequest(requestDto);
+        RequestDTO addedReq = FRIEND_FACADE.sendFriendRequest(requestDto, user.getName());
         return GSON.toJson(addedReq);
     }
     
-    @PUT
+    @PATCH
     @RolesAllowed("user")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public String handleRequest(String request) throws ApiException {
         RequestDTO requestDto = GSON.fromJson(request, RequestDTO.class);
-        RequestDTO addedReq = FRIEND_FACADE.handleFriendRequest(requestDto);
-        return GSON.toJson(addedReq);
+        RequestDTO handledReq = FRIEND_FACADE.handleFriendRequest(requestDto);
+        return GSON.toJson(handledReq);
     }
     
 }

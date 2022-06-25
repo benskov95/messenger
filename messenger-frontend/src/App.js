@@ -12,20 +12,25 @@ import NotFound from "./components/NotFound";
 function App() {
   const [user, setUser] = useState({});
   const [friends, setFriends] = useState([]);
+  const [unreadMessages, setUnreadMessages] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [error, setError] = useState("");
 
   return (
     <HashRouter>
       <div className="App">
-        <FriendBar 
-        isLoggedIn={isLoggedIn} 
-        setIsLoggedIn={setIsLoggedIn}
-        user={user} 
-        setUser={setUser} 
-        friends={friends}
-        setFriends={setFriends}
-        setError={setError} />
+        {isLoggedIn &&
+          <FriendBar 
+          isLoggedIn={isLoggedIn} 
+          setIsLoggedIn={setIsLoggedIn}
+          user={user} 
+          setUser={setUser} 
+          friends={friends}
+          setFriends={setFriends}
+          unreadMessages={unreadMessages}
+          setUnreadMessages={setUnreadMessages}
+          setError={setError} />
+        }
 
         <Error error={error} setError={setError} />
 
@@ -33,7 +38,7 @@ function App() {
           <Route path="/" element={<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUser={setUser} setError={setError} />} />
           <Route path="/register" element={<Register/>} />
           <Route path="/home" element={<Home isLoggedIn={isLoggedIn} user={user} setFriends={setFriends} setError={setError} />} />
-          <Route path="/convo/:userId" element={<Conversation user={user} setError={setError} />} />
+          <Route path="/convo/:userId" element={<Conversation user={user} setUnreadMessages={setUnreadMessages} setError={setError} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

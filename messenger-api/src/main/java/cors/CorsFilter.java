@@ -41,7 +41,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
     // If it is a preflight request add all the CORS headers here.
     if (isPreflightRequest(request)) {
         response.getHeaders().add("Access-Control-Allow-Credentials", "true");
-        response.getHeaders().add("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS, HEAD");
+        response.getHeaders().add("Access-Control-Allow-Methods","GET, POST, PATCH, DELETE, OPTIONS, HEAD");
           response.getHeaders().add("Access-Control-Allow-Headers",
           // Whatever other non-standard/safe headers (see list above) 
           // you want the client to be able to send to the server,

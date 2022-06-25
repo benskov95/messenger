@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 
 public class MessageFacade {
     
@@ -25,7 +26,7 @@ public class MessageFacade {
         return instance;
     }
     
-    public List<MessageDTO> getUserMessages(String loggedInUser, String selectedUser) throws ApiException {
+    public List<MessageDTO> getUserMessages(String username, String selectedUser) throws ApiException {
         EntityManager em = emf.createEntityManager();
         List<MessageDTO> messagesDto = new ArrayList();
         
@@ -33,7 +34,7 @@ public class MessageFacade {
             List<Message> messages = em.createQuery("SELECT m FROM Message m "
                     + "WHERE m.sender.username =:lUser AND m.receiver.username =:sUser "
                     + "OR m.receiver.username =:lUser AND m.sender.username =:sUser")
-                    .setParameter("lUser", loggedInUser)
+                    .setParameter("lUser", username)
                     .setParameter("sUser", selectedUser)
                     .getResultList();
 
@@ -50,40 +51,50 @@ public class MessageFacade {
         }
     }
     
-    public List<UnreadMsgCountDTO> getNumberOfUnreadMessagesByUser(String receiverName) throws ApiException {
+    public List<UnreadMsgCountDTO> getUnreadMessages(String username) throws ApiException {
         EntityManager em = emf.createEntityManager();
-        List<UnreadMsgCountDTO> unreadMessages = new ArrayList();
+        List<UnreadMsgCountDTO> unreadMessagesDto = new ArrayList();
         
         try {
-            List<Message> messages = em.createQuery("SELECT m FROM Message m WHERE m.receiver.username = :receiver")
-                    .setParameter("receiver", receiverName)
+            List<User> uniqueSenders = em.createQuery("SELECT DISTINCT m.sender FROM Message m WHERE m.receiver.username = :receiver")
+                    .setParameter("receiver", username)
                     .getResultList();
             
-            List<Message> filteredMessages = new ArrayList();
-            for (Message m: messages) {
-                if (filteredMessages.isEmpty()) {
-                    filteredMessages.add(m);
-                } else {
-                    for (Message filteredM : filteredMessages) {
-                        if (!filteredM.getSender().getUsername().equals(m.getSender().getUsername())) {
-                            filteredMessages.add(m);
-                        }
-                    }
-                }
-            }
-            
-            for (Message m : filteredMessages) {
-                List<Message> messagesFromSender = em.createQuery("SELECT m FROM Message m WHERE m.sender.username = :sender " + 
-                        "AND m.receiver.username = :receiver AND m.msgRead = false")
-                        .setParameter("sender", m.getSender().getUsername())
-                        .setParameter("receiver", receiverName)
+            for (User u : uniqueSenders) {
+                List<Message> messagesFromSender = em.createQuery("SELECT m FROM Message m WHERE m.sender.username = :sender " 
+                        + "AND m.receiver.username = :receiver AND m.msgRead = false")
+                        .setParameter("sender", u.getUsername())
+                        .setParameter("receiver", username)
                         .getResultList();
-                unreadMessages.add(new UnreadMsgCountDTO(messagesFromSender.size(), m.getSender().getUsername(), m.getReceiver().getUsername()));
+                unreadMessagesDto.add(new UnreadMsgCountDTO(messagesFromSender.size(), u.getUsername(), username));
             }
             
-            return unreadMessages;
+            return unreadMessagesDto;
         } catch (Exception e) {
             throw new ApiException("Encountered an error when checking for unread messages. Try again later.");
+        } finally {
+            em.close();
+        }
+    }
+    
+    public void changeMessagesToRead(List<MessageDTO> messagesDto, String username) throws ApiException {
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            for (MessageDTO mDto : messagesDto) {
+                Message m = (Message) em.createQuery("SELECT m FROM Message m WHERE m.id = :id")
+                        .setParameter("id", mDto.getId())
+                        .getSingleResult();
+  
+                em.getTransaction().begin();
+                em.createQuery("UPDATE Message m SET m.msgRead = :read WHERE m = :message") 
+                        .setParameter("read", true)
+                        .setParameter("message", m)
+                        .executeUpdate();
+                em.getTransaction().commit();
+            }
+        } catch (Exception e) {
+            throw new ApiException("Encountered an error when changing message status. Try again later.");
         } finally {
             em.close();
         }

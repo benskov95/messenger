@@ -1,12 +1,14 @@
 
-.frd-msg-container {
+.friend-msg-container {
     margin-bottom: 15px;
     white-space: pre-wrap;
+    display: flex;
 }
 
 .friend-message {
     background-color: darkgray;
     margin: 10px 0px 5px 10px;
+    justify-content: space-between;
     padding: 10px;
     border-radius: 5px;
     text-align: left;
@@ -18,10 +20,10 @@
 .friend-message-date {
     font-size: 10px;
     text-align: left;
-    margin: 5px 0px 0px 15px;
+    margin: -15px 0px 5px 10px;
 }
 
-.usr-msg-container {
+.user-msg-container {
     margin-bottom: 5px;
     clear: both;
     white-space: pre-wrap;
@@ -44,7 +46,7 @@
     font-size: 10px;
     text-align: right;
     clear: right;
-    margin: 5px 15px 0px 0px;
+    margin: 5px 10px 0px 0px;
 }
 
 #message-box {

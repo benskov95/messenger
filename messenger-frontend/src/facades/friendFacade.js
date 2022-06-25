@@ -1,28 +1,43 @@
-import URL from "../utils/settings";
 import apiFacade, {handleHttpErrors} from "./apiFacade";
 
 const friendFacade = () => {
 
     const getAllFriends = async () => {
-        const response = await fetch(URL + "/api/friend", apiFacade.makeOptions("GET", true));
+        const response = await fetch
+        (
+            process.env.REACT_APP_API_URL + "/api/friend", 
+            apiFacade.makeOptions("GET", true)
+        );
         const result = handleHttpErrors(response);
         return result;
     }
 
     const getAllPendingRequests = async () => {
-        const response = await fetch(URL + "/api/friend/requests", apiFacade.makeOptions("GET", true));
+        const response = await fetch
+        (
+            process.env.REACT_APP_API_URL + "/api/friend/requests", 
+            apiFacade.makeOptions("GET", true)
+        );
         const result = handleHttpErrors(response);
         return result;
     }
 
     const sendRequest = async (request) => {
-        const response = await fetch(URL + "/api/friend", apiFacade.makeOptions("POST", true, request));
+        const response = await fetch
+        (
+            process.env.REACT_APP_API_URL + "/api/friend", 
+            apiFacade.makeOptions("POST", true, request)
+        );
         const result = handleHttpErrors(response);
         return result;
     }
 
     const handleRequest = async (request) => {
-        const response = await fetch(URL + "/api/friend", apiFacade.makeOptions("PUT", true, request));
+        const response = await fetch
+        (
+            process.env.REACT_APP_API_URL + "/api/friend", 
+            apiFacade.makeOptions("PATCH", true, request)
+        );
         const result = handleHttpErrors(response);
         return result;
     }

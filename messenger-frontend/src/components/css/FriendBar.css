@@ -73,6 +73,17 @@
     pointer-events: none;
 }
 
+.unread-msg-notification {
+    background-color: red;
+    position: absolute;
+    border-radius: 50px;
+    height: 20px;
+    width: 20px;
+    margin: 40px 0px 0px 45px;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
 #user-box {
     background-color: rgb(36, 34, 34);
     position: absolute;

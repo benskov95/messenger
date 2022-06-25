@@ -7,14 +7,17 @@ import messageFacade from "../facades/messageFacade";
 import displayError from "../utils/error";
 import moment from "moment";
 import {io} from 'socket.io-client';
+import createRoomId from "../utils/roomIdCreator";
 
 export default function Conversation(props) {
     const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState(msgInitialState);
     const [defaultHeight, setDefaultHeight] = useState(""); // shitty solution, but couldn't get the message field to resize properly after hitting the enter key without it.
+    const [userTyping, setUserTyping] = useState(false);
     const socket = useRef(null);
     const viewRef = useRef(null);
     let {userId} = useParams();
+    let timer;
 
     useEffect(() => {
         window.addEventListener('keydown', sendMessage);
@@ -24,18 +27,27 @@ export default function Conversation(props) {
     });
 
     useEffect(() => {
+        let loggedInUser = props.user.username;
         socket.current = io(process.env.REACT_APP_CHATROOM_URL, {transports: ['websocket']});
         socket.current.on("connect", () => {
-            socket.current.emit("create", createRoomId(), props.user.username);
+            socket.current.emit("join", createRoomId(loggedInUser, userId, "convo"));
             socket.current.on("reload", () => {
                 getAllMessages();
             })
+            socket.current.on("isTyping", () => {
+                setUserTyping(true);
+                scrollToBottom();
+                if (timer !== null) clearTimeout(timer);
+                timer = setTimeout(() => {
+                    setUserTyping(false);
+                }, 3000);
+            })
         })
         return function disconnectSocket() {
-            socket.current.emit("end", props.user.username);
+            socket.current.emit("end");
             socket.current = null;
         }
-    }, []);
+    });
 
     useEffect(() => {
         getAllMessages();
@@ -45,24 +57,36 @@ export default function Conversation(props) {
         scrollToBottom();
     }, [messages]);
 
-    const createRoomId = () => {
-        let list = [];
-        list.push(props.user.username);
-        list.push(userId);
-        list.sort();
-        return (list[0] + list[1])
-    }
-
     const handleChange = (e) => {
+        socket.current.emit("startTyping");
         setDefaultHeight("");
         setNewMessage({...newMessage, [e.target.name]: e.target.value});
     }
 
     const getAllMessages = async () => {
         try {
-            const res = await messageFacade.getAllMessages(userId);
-            setMessages(prepListForDisplay(res));
+            const allMessages = await messageFacade.getAllMessages(userId);
+            await changeMessagesToRead(allMessages);
+            const unread = await messageFacade.getUnreadMessages();
+            props.setUnreadMessages(unread);
+            setMessages(prepListForDisplay(allMessages));
             scrollToBottom();
+        } catch (e) {
+            displayError(e, props.setError);
+        }
+    }
+
+    const changeMessagesToRead = async (messages) => {
+        let readMessages = [];
+        try {
+            messages.forEach(message => {
+                if (!message.msgRead && message.receiverName === props.user.username) {
+                    readMessages.push(message);
+                }
+            });
+            if (readMessages.length > 0) {
+                await messageFacade.changeMessagesToRead(readMessages);
+            }
         } catch (e) {
             displayError(e, props.setError);
         }
@@ -128,15 +152,18 @@ export default function Conversation(props) {
                         return (
                             <div key={msg.id}>
                                 {msg.senderName === props.user.username ? 
-                                <div className="usr-msg-container">
+                                <div className="user-msg-container">
                                     <p className="user-message">{msg.content}</p>
                                     <p className="user-message-date">{msg.timestamp}</p>
                                 </div>
                                 : 
-                                <div className="frd-msg-container">
-                                    <p className="friend-message">{msg.content}</p>
-                                    <p className="friend-message-date">{msg.timestamp}</p>
-                                </div>
+                                <>
+                                    <div className="friend-msg-container">
+                                        <p className="friend-message">{msg.content}</p>
+                                    </div>
+                                    {/* has to be like this even though user one has date inside container*/}
+                                    <p className="friend-message-date">{msg.timestamp}</p> 
+                                </>
                                 }
                             </div>
                         )})}
@@ -144,6 +171,7 @@ export default function Conversation(props) {
             : <p id="no-msg-text">No messages between you and {userId} yet.</p>}
 
             <div id="message-box">
+                <p style={{position: "absolute", margin: "-35px 0px 0px 30.5vw", width: "100px", justifyContent: "center", fontSize: "0.8rem"}}>{userTyping && `${userId} is typing...`}</p>
                 <textarea
                 style={{height: defaultHeight}}
                 name="content" 
