@@ -45,7 +45,6 @@ public class JWTAuthenticationFilter implements ContainerRequestFilter {
      }
      try {
        UserPrincipal user = getUserPrincipalFromTokenIfValid(token);
-       //What if the client had logged out????
        request.setSecurityContext(new JWTSecurityContext(user, request));
      } catch (AuthenticationException | ParseException | JOSEException ex) {
        Logger.getLogger(JWTAuthenticationFilter.class.getName()).log(Level.SEVERE, null, ex);
@@ -69,10 +68,8 @@ public class JWTAuthenticationFilter implements ContainerRequestFilter {
    return false;
  }
 
- public UserPrincipal getUserPrincipalFromTokenIfValid(String token)
-         throws ParseException, JOSEException, AuthenticationException {
+ public UserPrincipal getUserPrincipalFromTokenIfValid(String token) throws ParseException, JOSEException, AuthenticationException {
    SignedJWT signedJWT = SignedJWT.parse(token);
-   //Is it a valid token (generated with our shared key)
    JWSVerifier verifier = new MACVerifier(SharedSecret.getSharedKey());
 
    if (signedJWT.verify(verifier)) {
@@ -85,7 +82,6 @@ public class JWTAuthenticationFilter implements ContainerRequestFilter {
      String[] rolesArray = roles.split(",");
      
      return new UserPrincipal(username, rolesArray);
-//     return new UserPrincipal(username, roles);
    } else {
      throw new JOSEException("User could not be extracted from token");
    }

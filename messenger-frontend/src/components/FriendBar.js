@@ -15,7 +15,7 @@ export default function FriendBar(props) {
     const [currentlySelected, setCurrentlySelected] = useState();
     const [currentConvoUser, setCurrentConvoUser] = useState("");
     const socket = useRef(null);
-
+    
     useEffect(() => {
         if (props.isLoggedIn) {
             loadFriendList();
@@ -25,12 +25,10 @@ export default function FriendBar(props) {
 
     useEffect(() => {
         let loggedInUser = props.user.username;
-
-
         socket.current = io(process.env.REACT_APP_CHATROOM_URL, {transports: ['websocket']});
         socket.current.on("connect", () => {
             props.friends.forEach(friend => {
-                if (friend.username !== currentConvoUser) {
+                if (friend.username !== currentConvoUser && socket.current !== null) {
                     socket.current.emit("join", createRoomId(loggedInUser, friend.username));
                 }
             })
@@ -38,7 +36,7 @@ export default function FriendBar(props) {
         socket.current.on("reload", () => {
             loadUnreadMessages();
         })
-        return function disconnectSocket() {
+        return () => {
             socket.current.emit("end");
             socket.current = null;
         }
@@ -83,16 +81,22 @@ export default function FriendBar(props) {
         navigate(`/convo/${id}`);
     }
 
-    const logout = () => {
-        if (typeof currentlySelected !== "undefined") {
-            currentlySelected.target.className = "friend-list-element";
+    const logout = async () => {
+        try {
+            if (typeof currentlySelected !== "undefined") {
+                currentlySelected.target.className = "friend-list-element";
+            }
+
+            await apiFacade.logout();
+            props.setIsLoggedIn(false);
+            props.setUser({});
+            props.setFriends([]);
+            props.setUnreadMessages([]);
+            apiFacade.setTokenInUse("");
+            navigate("/");
+        } catch (e) {
+            displayError(e, props.setError)
         }
-        props.setIsLoggedIn(false);
-        props.setUser({});
-        props.setFriends([]);
-        props.setUnreadMessages([]);
-        apiFacade.setTokenInUse("");
-        navigate("/");
     }
     
     const highlightSelectedFriend = (e) => {

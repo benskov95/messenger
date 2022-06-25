@@ -21,7 +21,7 @@ export default function Conversation(props) {
 
     useEffect(() => {
         window.addEventListener('keydown', sendMessage);
-        return function cleanupListener() {
+        return () => {
             window.removeEventListener('keydown', sendMessage);
         }
     });
@@ -43,7 +43,7 @@ export default function Conversation(props) {
                 }, 3000);
             })
         })
-        return function disconnectSocket() {
+        return () => {
             socket.current.emit("end");
             socket.current = null;
         }

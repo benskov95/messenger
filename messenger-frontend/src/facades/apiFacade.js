@@ -7,7 +7,7 @@ export function handleHttpErrors(res) {
 }
 
 const apiFacade = () => {
-    let tokenInUse = ""
+    let tokenInUse = "";
 
     const setTokenInUse = (token) => {
         tokenInUse = token;
@@ -17,20 +17,25 @@ const apiFacade = () => {
         return tokenInUse;
     };
 
-    const loggedIn = () => {
-        const loggedIn = getTokenInUse() != null;
-        return loggedIn;
-    };
-
     const login = async (user) => {
         const response = await fetch
         (
-            process.env.REACT_APP_API_URL + "/api/login", 
-            makeOptions("POST", true, user)
+            process.env.REACT_APP_API_URL + "/api/auth", 
+            makeOptions("POST", false, user)
         );
         const result = handleHttpErrors(response);
         return result;
     };
+
+    const logout = async () => {
+        const response = await fetch
+        (
+            process.env.REACT_APP_API_URL + "/api/auth",
+            makeOptions("GET", true)
+        );
+        const result = handleHttpErrors(response);
+        return result;
+    }
 
     const register = async (user) => {
         const response = await fetch
@@ -50,11 +55,11 @@ const apiFacade = () => {
             Accept: "application/json",
         },
         };
-        if (addToken && loggedIn()) {
-        opts.headers["x-access-token"] = getTokenInUse();
+        if (addToken) {
+            opts.headers["x-access-token"] = getTokenInUse();
         }
         if (body) {
-        opts.body = JSON.stringify(body);
+            opts.body = JSON.stringify(body);
         }
         return opts;
     };
@@ -63,8 +68,8 @@ const apiFacade = () => {
         makeOptions,
         setTokenInUse,
         getTokenInUse,
-        loggedIn,
         login,
+        logout,
         register
     };
 }

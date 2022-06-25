@@ -17,8 +17,7 @@ export default function Register() {
 
     useEffect(() => {
         window.addEventListener('keydown', detectEnterKeyPress);
-        return function cleanupListener() {
-            // event listener removed when component is unmounted
+        return () => {
             window.removeEventListener('keydown', detectEnterKeyPress);
         }
     });

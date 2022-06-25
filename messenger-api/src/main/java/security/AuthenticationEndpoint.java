@@ -1,6 +1,7 @@
 package security;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nimbusds.jose.JOSEException;
@@ -10,9 +11,9 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import dto.UserDTO;
 import facades.UserFacade;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import entities.User;
@@ -24,15 +25,29 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import security.errorhandling.AuthenticationException;
 import errorhandling.GenericExceptionMapper;
+import java.text.ParseException;
+import java.util.HashMap;
+import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManagerFactory;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import utils.EMF_Creator;
 
-@Path("login")
-public class LoginEndpoint {
+@Path("auth")
+public class AuthenticationEndpoint {
 
-  public static final int TOKEN_EXPIRE_TIME = 1000 * 60 * 30; //30 min
+  private static final int TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 2; // 2 hr
   private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
-  public static final UserFacade USER_FACADE = UserFacade.getUserFacade(EMF);
+  private static final UserFacade USER_FACADE = UserFacade.getUserFacade(EMF);
+  private static final JWTAuthenticationFilter jwt = new JWTAuthenticationFilter();
+  private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+  private HashMap<String, String> test;
+  
+  public AuthenticationEndpoint() {
+      if (test == null) {
+          test = new HashMap();
+      }
+  }
   
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
@@ -41,6 +56,10 @@ public class LoginEndpoint {
     JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
     String username = json.get("username").getAsString();
     String password = json.get("password").getAsString();
+    
+    if (test.get(username) != null) {
+        throw new AuthenticationException("User is already logged in.");
+    }
 
     try {
       User user = USER_FACADE.getVerifiedUser(username, password);
@@ -48,8 +67,9 @@ public class LoginEndpoint {
       JsonObject responseJson = new JsonObject();
       responseJson.addProperty("username", username);
       responseJson.addProperty("token", token);
-      return Response.ok(new Gson().toJson(responseJson)).build();
-
+      test.put(username, token);
+      return Response.ok(GSON.toJson(responseJson)).build();
+      
     } catch (JOSEException | AuthenticationException ex) {
       if (ex instanceof AuthenticationException) {
         throw (AuthenticationException) ex;
@@ -57,6 +77,15 @@ public class LoginEndpoint {
       Logger.getLogger(GenericExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
     }
     throw new AuthenticationException("Invalid username or password! Please try again");
+  }
+  
+  @GET
+  @RolesAllowed("user")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String logout(@HeaderParam("x-access-token") String token) throws ParseException, JOSEException, AuthenticationException {
+      UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
+      String result = test.remove(user.getName());
+      return GSON.toJson(new UserDTO(user.getName()));
   }
 
   private String createToken(User user) throws JOSEException {
