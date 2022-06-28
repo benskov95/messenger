@@ -36,18 +36,12 @@ import utils.EMF_Creator;
 @Path("auth")
 public class AuthenticationEndpoint {
 
-  private static final int TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 2; // 2 hr
+  private static final int TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 2; // 2 hrs
   private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
   private static final UserFacade USER_FACADE = UserFacade.getUserFacade(EMF);
   private static final JWTAuthenticationFilter jwt = new JWTAuthenticationFilter();
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-  private HashMap<String, String> test;
-  
-  public AuthenticationEndpoint() {
-      if (test == null) {
-          test = new HashMap();
-      }
-  }
+  private static HashMap<String, String> test = new HashMap();
   
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
@@ -85,7 +79,7 @@ public class AuthenticationEndpoint {
   public String logout(@HeaderParam("x-access-token") String token) throws ParseException, JOSEException, AuthenticationException {
       UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
       String result = test.remove(user.getName());
-      return GSON.toJson(new UserDTO(user.getName()));
+      return GSON.toJson(new UserDTO(result));
   }
 
   private String createToken(User user) throws JOSEException {
