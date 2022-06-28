@@ -41,7 +41,7 @@ public class AuthenticationEndpoint {
   private static final UserFacade USER_FACADE = UserFacade.getUserFacade(EMF);
   private static final JWTAuthenticationFilter jwt = new JWTAuthenticationFilter();
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-  private static HashMap<String, String> test = new HashMap();
+  private static HashMap<String, String> loggedInUsersMap = new HashMap();
   
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
@@ -51,7 +51,7 @@ public class AuthenticationEndpoint {
     String username = json.get("username").getAsString();
     String password = json.get("password").getAsString();
     
-    if (test.get(username) != null) {
+    if (loggedInUsersMap.get(username) != null) {
         throw new AuthenticationException("User is already logged in.");
     }
 
@@ -61,7 +61,7 @@ public class AuthenticationEndpoint {
       JsonObject responseJson = new JsonObject();
       responseJson.addProperty("username", username);
       responseJson.addProperty("token", token);
-      test.put(username, token);
+      loggedInUsersMap.put(username, token);
       return Response.ok(GSON.toJson(responseJson)).build();
       
     } catch (JOSEException | AuthenticationException ex) {
@@ -78,7 +78,7 @@ public class AuthenticationEndpoint {
   @Produces(MediaType.APPLICATION_JSON)
   public String logout(@HeaderParam("x-access-token") String token) throws ParseException, JOSEException, AuthenticationException {
       UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
-      String result = test.remove(user.getName());
+      String result = loggedInUsersMap.remove(user.getName());
       return GSON.toJson(new UserDTO(result));
   }
 
