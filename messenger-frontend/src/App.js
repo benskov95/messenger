@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import './root-css/App.css';
 import Home from './components/Home';
 import Login from "./components/Login"
@@ -35,6 +35,7 @@ function App() {
         <Error error={error} setError={setError} />
 
         <Routes>
+          <Route path="/messenger" element={<Navigate replace to="/" />} />
           <Route path="/" element={<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUser={setUser} setError={setError} />} />
           <Route path="/register" element={<Register/>} />
           <Route path="/home" element={<Home isLoggedIn={isLoggedIn} user={user} setFriends={setFriends} setError={setError} />} />

@@ -4,7 +4,7 @@
 
     <groupId>b.messenger</groupId>
     <artifactId>messenger</artifactId>
-    <version>1.0.1</version>
+    <version>1.0</version>
     <packaging>war</packaging>
 
     <name>messenger-api</name>
@@ -118,6 +118,7 @@
 
     <build>
        
+        <finalName>bon-m</finalName>
         <plugins>
             <!-- Plugin used to deploy to remote server -->
             <plugin>
