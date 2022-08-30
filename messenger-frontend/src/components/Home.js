@@ -1,17 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./css/Base.css"
 import "./css/Home.css"
 import userFacade from "../facades/userFacade";
 import friendFacade from "../facades/friendFacade";
 import displayError from "../utils/error";
 import reloadIcon from "../utils/icons/reload-icon.png";
+import {io} from 'socket.io-client';
 
 export default function Home(props) {
     const [usersShowing, setUsersShowing] = useState(true);
     const [users, setUsers] = useState([]);
     const [usersCopy, setUsersCopy] = useState([]);
     const [requests, setRequests] = useState([]);
+    const socket = useRef(null);
     let searchQuery = "";
+    console.log(requests);
+
+    useEffect(() => {
+        socket.current = io(process.env.REACT_APP_SOCKET_SERVER_URL, {transports: ['websocket']});
+        socket.current.on("connect", () => {
+            socket.current.emit("join", "home");
+            socket.current.on(props.user.username, () => {
+                loadData();
+            })
+        })
+        return () => {
+            socket.current.emit("end");
+            socket.current = null;
+        }
+    });
     
     useEffect(() => {
         loadData();
@@ -22,9 +39,11 @@ export default function Home(props) {
             try {
                 const allUsers = await userFacade.getAllUsers();
                 const allRequests = await friendFacade.getAllPendingRequests();
+                const res = await friendFacade.getAllFriends();
                 setUsers(allUsers);
                 setUsersCopy(allUsers);
                 setRequests(allRequests);
+                props.setFriends(res);
             } catch (e) {
                 displayError(e, props.setError);
             }
@@ -41,6 +60,7 @@ export default function Home(props) {
         try {
             await friendFacade.sendRequest(friendRequest);
             await loadData();
+            socket.current.emit("request", e.target.name);
         } catch (e) {
             displayError(e, props.setError)
         }
@@ -52,12 +72,9 @@ export default function Home(props) {
         friendRequest.accepted = isAccepted;
 
         try {
-            const res = await friendFacade.handleRequest(friendRequest);
-            if (res.accepted) {
-                const res = await friendFacade.getAllFriends();
-                props.setFriends(res);
-            }
+            await friendFacade.handleRequest(friendRequest);
             await loadData();
+            socket.current.emit("request", friendRequest.senderName);
         } catch(e) {
             displayError(e, props.setError);
         }
@@ -91,6 +108,9 @@ export default function Home(props) {
                 <div id="refresh-btn" onClick={loadData}>
                     <img id="refresh-btn-img" src={reloadIcon} alt="" />
                 </div>
+                {requests.length > 0 &&
+                    <p id="friend-req-notifs">{requests.length}</p>
+                }
                 <button name="tab2" id={usersShowing ? "tab-btn" : "toggled-btn"} onClick={determineListToShow}>Friend requests</button>
             </div>
             <ul className="user-list" hidden={!usersShowing}>

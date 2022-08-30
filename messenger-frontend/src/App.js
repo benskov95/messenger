@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './root-css/App.css';
 import Home from './components/Home';
 import Login from "./components/Login"
@@ -17,7 +17,7 @@ function App() {
   const [error, setError] = useState("");
 
   return (
-    <HashRouter>
+    <BrowserRouter>
       <div className="App">
         {isLoggedIn &&
           <FriendBar 
@@ -42,7 +42,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 

@@ -14,6 +14,7 @@ export default function Conversation(props) {
     const [newMessage, setNewMessage] = useState(msgInitialState);
     const [defaultHeight, setDefaultHeight] = useState(""); // shitty solution, but couldn't get the message field to resize properly after hitting the enter key without it.
     const [userTyping, setUserTyping] = useState(false);
+    const [lastKnownTop, setLastKnownTop] = useState(0);
     const socket = useRef(null);
     const viewRef = useRef(null);
     let {userId} = useParams();
@@ -28,7 +29,7 @@ export default function Conversation(props) {
 
     useEffect(() => {
         let loggedInUser = props.user.username;
-        socket.current = io(process.env.REACT_APP_CHATROOM_URL, {transports: ['websocket']});
+        socket.current = io(process.env.REACT_APP_SOCKET_SERVER_URL, {transports: ['websocket']});
         socket.current.on("connect", () => {
             socket.current.emit("join", createRoomId(loggedInUser, userId, "convo"));
             socket.current.on("reload", () => {
@@ -36,7 +37,6 @@ export default function Conversation(props) {
             })
             socket.current.on("isTyping", () => {
                 setUserTyping(true);
-                scrollToBottom();
                 if (timer !== null) clearTimeout(timer);
                 timer = setTimeout(() => {
                     setUserTyping(false);
@@ -70,7 +70,6 @@ export default function Conversation(props) {
             const unread = await messageFacade.getUnreadMessages();
             props.setUnreadMessages(unread);
             setMessages(prepListForDisplay(allMessages));
-            scrollToBottom();
         } catch (e) {
             displayError(e, props.setError);
         }
@@ -141,11 +140,15 @@ export default function Conversation(props) {
     }
 
     const scrollToBottom = () => {
-        viewRef.current?.scrollIntoView({behavior: "smooth"})
+        let box = document.getElementById("box");
+        if (!messages.length || box.scrollTop >= lastKnownTop) {
+            viewRef.current?.scrollIntoView({behavior: "smooth"})
+            setLastKnownTop(box.scrollTop);
+        }
     }
 
     return (
-        <div className="main-box-scrollable">
+        <div id="box" className="main-box-scrollable">
             {messages.length > 0 ? 
                 <div>
                     {messages.map(msg => {

@@ -4,7 +4,6 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import { useEffect, useRef, useState } from "react";
 import apiFacade from "../facades/apiFacade";
-import friendFacade from "../facades/friendFacade";
 import messageFacade from "../facades/messageFacade";
 import displayError from "../utils/error";
 import { io } from "socket.io-client";
@@ -18,14 +17,13 @@ export default function FriendBar(props) {
     
     useEffect(() => {
         if (props.isLoggedIn) {
-            loadFriendList();
             loadUnreadMessages();
         }
     }, [props.isLoggedIn]);
 
     useEffect(() => {
         let loggedInUser = props.user.username;
-        socket.current = io(process.env.REACT_APP_CHATROOM_URL, {transports: ['websocket']});
+        socket.current = io(process.env.REACT_APP_SOCKET_SERVER_URL, {transports: ['websocket']});
         socket.current.on("connect", () => {
             props.friends.forEach(friend => {
                 if (friend.username !== currentConvoUser && socket.current !== null) {
@@ -41,15 +39,6 @@ export default function FriendBar(props) {
             socket.current = null;
         }
     });
-    
-    const loadFriendList = async () => {
-        try {
-            const allFriends = await friendFacade.getAllFriends();
-            props.setFriends(allFriends);
-        } catch (e) {
-            displayError(e, props.setError);
-        }
-    }
 
     const loadUnreadMessages = async () => {
         try {

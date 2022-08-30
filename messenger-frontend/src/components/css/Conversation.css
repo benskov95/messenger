@@ -13,12 +13,12 @@
     border-radius: 5px;
     text-align: left;
     max-width: 200px;
-    font-size: 14px;
+    font-size: 0.9rem;
     overflow-wrap: break-word;
 }
 
 .friend-message-date {
-    font-size: 10px;
+    font-size: 0.6rem;
     text-align: left;
     margin: -15px 0px 5px 10px;
 }
@@ -38,12 +38,12 @@
     border-radius: 5px;
     text-align: left;
     max-width: 200px;
-    font-size: 14px;
+    font-size: 0.9rem;
     overflow-wrap: break-word;
 }
 
 .user-message-date {
-    font-size: 10px;
+    font-size: 0.6rem;
     text-align: right;
     clear: right;
     margin: 5px 10px 0px 0px;
@@ -84,5 +84,23 @@
     #message-field {
         width: 25vw;
         margin-right: 175px
+    }
+
+    .friend-message {
+        font-size: 1.2rem;
+        max-width: 400px;
+    }
+
+    .friend-message-date {
+        font-size: 0.7rem;
+    }
+
+    .user-message {
+        font-size: 1.2rem;
+        max-width: 400px;
+    }
+
+    .user-message-date {
+        font-size: 0.7rem;
     }
 }
