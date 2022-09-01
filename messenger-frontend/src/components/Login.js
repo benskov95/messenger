@@ -19,6 +19,10 @@ export default function Login(props) {
         }
     });
 
+    useEffect(() => {
+        tokenAuth();
+    }, [])
+
     const handleChange = (e) => {
         props.setError("");
         setLoginCreds({...loginCreds, [e.target.name]: e.target.value});
@@ -30,14 +34,27 @@ export default function Login(props) {
             const res = await apiFacade.login(loginCreds);
             let token = res.token;
             setLoginCreds(userInitialState);
-            apiFacade.setTokenInUse(token);
+            apiFacade.setAccessToken(token);
             props.setUser(jwtDecode(token));
-            navigate("/home");
             props.setIsLoggedIn(true);
+            navigate("/home");
         } catch (e) {
             displayError(e, props.setError);
         }
         setLoading(false);
+    }
+
+    const tokenAuth = async () => {
+        setLoading(true);
+        const res = await apiFacade.loginWithToken();
+        if (res) {
+            let token = res.token;
+            apiFacade.setAccessToken(token);
+            props.setUser(jwtDecode(token));
+            props.setIsLoggedIn(true);
+            navigate("/home");
+        }
+        setLoading(false); 
     }
 
     const goToRegister = () => {

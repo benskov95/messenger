@@ -1,4 +1,4 @@
-import apiFacade, {handleHttpErrors} from "./apiFacade";
+import apiFacade from "./apiFacade";
 
 const userFacade = () => {
 
@@ -8,7 +8,7 @@ const userFacade = () => {
             process.env.REACT_APP_API_URL + "/api/user", 
             apiFacade.makeOptions("GET", true)
         );
-        const result = handleHttpErrors(response);
+        const result = apiFacade.handleHttpErrors(response);
         return result;
     }
 

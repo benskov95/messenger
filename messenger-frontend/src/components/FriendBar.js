@@ -75,13 +75,11 @@ export default function FriendBar(props) {
             if (typeof currentlySelected !== "undefined") {
                 currentlySelected.target.className = "friend-list-element";
             }
-
-            await apiFacade.logout();
             props.setIsLoggedIn(false);
             props.setUser({});
             props.setFriends([]);
             props.setUnreadMessages([]);
-            apiFacade.setTokenInUse("");
+            apiFacade.removeAccessToken();
             navigate("/");
         } catch (e) {
             displayError(e, props.setError)

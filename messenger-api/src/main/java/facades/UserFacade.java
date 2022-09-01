@@ -41,6 +41,18 @@ public class UserFacade {
         }
         return user;
     }
+    
+    public User getUserByName(String username) {
+        // only for use in token login (Auth endpoint)
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            User user = em.find(User.class, username);
+            return user;
+        } finally {
+            em.close();
+        }
+    }
 
     public List<UserDTO> getAllUsers(String username) throws ApiException {
         EntityManager em = emf.createEntityManager();

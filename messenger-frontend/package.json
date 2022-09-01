@@ -2,7 +2,7 @@
   "name": "messenger",
   "author": "benskov95",
   "version": "0.1.0",
-  "homepage": ".",
+  "homepage": "https://benskov.com/messenger",
   "dependencies": {
     "concurrently": "^7.1.0",
     "electron-is-dev": "^2.0.0",

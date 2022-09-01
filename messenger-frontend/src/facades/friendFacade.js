@@ -1,4 +1,4 @@
-import apiFacade, {handleHttpErrors} from "./apiFacade";
+import apiFacade from "./apiFacade";
 
 const friendFacade = () => {
 
@@ -8,7 +8,7 @@ const friendFacade = () => {
             process.env.REACT_APP_API_URL + "/api/friend", 
             apiFacade.makeOptions("GET", true)
         );
-        const result = handleHttpErrors(response);
+        const result = apiFacade.handleHttpErrors(response);
         return result;
     }
 
@@ -18,7 +18,7 @@ const friendFacade = () => {
             process.env.REACT_APP_API_URL + "/api/friend/requests", 
             apiFacade.makeOptions("GET", true)
         );
-        const result = handleHttpErrors(response);
+        const result = apiFacade.handleHttpErrors(response);
         return result;
     }
 
@@ -28,7 +28,7 @@ const friendFacade = () => {
             process.env.REACT_APP_API_URL + "/api/friend", 
             apiFacade.makeOptions("POST", true, request)
         );
-        const result = handleHttpErrors(response);
+        const result = apiFacade.handleHttpErrors(response);
         return result;
     }
 
@@ -38,7 +38,7 @@ const friendFacade = () => {
             process.env.REACT_APP_API_URL + "/api/friend", 
             apiFacade.makeOptions("PATCH", true, request)
         );
-        const result = handleHttpErrors(response);
+        const result = apiFacade.handleHttpErrors(response);
         return result;
     }
 

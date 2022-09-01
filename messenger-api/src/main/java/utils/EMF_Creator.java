@@ -6,18 +6,10 @@ import javax.persistence.Persistence;
 
 public class EMF_Creator {
 
-    /**
-     * Call this method before all integration tests that uses the Grizzly
-     * Server and the Test Database (in @BeforeAll ) Remember to call
-     * enRestTestWithDB() in @AfterAll
-     */
     public static void startREST_TestWithDB() {
         System.setProperty("IS_INTEGRATION_TEST_WITH_DB", "testing");
     }
 
-    /*
-      Call this method in your @AfterAll method if startREST_TestWithDB() was previously called
-     */
     public static void endREST_TestWithDB() {
         System.clearProperty("IS_INTEGRATION_TEST_WITH_DB");
     }
@@ -31,18 +23,16 @@ public class EMF_Creator {
     }
 
     private static EntityManagerFactory createEntityManagerFactory(boolean isTest) {
-
-        
-        boolean isDeployed = (System.getProperty("DEPLOYED") != null);
+        boolean isDeployed = (System.getenv("DEPLOYED") != null);
         if (isDeployed) {
             System.out.println("USING ENVIRONMENT VARIABLES");
-            System.out.println("DEPLOYED       -->" + System.getProperty("DEPLOYED"));
-            System.out.println("USER           -->" + System.getProperty("USER"));
-            System.out.println("PW             -->" + System.getProperty("PW"));
-            System.out.println("CONNECTION_STR -->" + System.getProperty("CONNECTION_STR"));
-            String user = System.getProperty("USER");
-            String pw = System.getProperty("PW");
-            String connection_str = System.getProperty("CONNECTION_STR"); 
+            System.out.println("DEPLOYED       -->" + System.getenv("DEPLOYED"));
+            System.out.println("USER           -->" + System.getenv("USER"));
+            System.out.println("PW             -->" + System.getenv("PW"));
+            System.out.println("CONNECTION_STR -->" + System.getenv("CONNECTION_STR_BON"));
+            String user = System.getenv("USER");
+            String pw = System.getenv("PW");
+            String connection_str = System.getenv("CONNECTION_STR_BON"); 
             Properties props = new Properties();
             props.setProperty("javax.persistence.jdbc.user", user);
             props.setProperty("javax.persistence.jdbc.password", pw);
@@ -54,7 +44,7 @@ public class EMF_Creator {
             return Persistence.createEntityManagerFactory("pu", props);
         }
 
-        String puName = isTest || System.getProperty("IS_INTEGRATION_TEST_WITH_DB") != null ? "puTest" : "pu"; //Only legal names
+        String puName = isTest || System.getProperty("IS_INTEGRATION_TEST_WITH_DB") != null ? "puTest" : "pu"; 
         if (puName.equals("puTest")) {
             System.out.println("Using the TEST database via persistence-unit --> puTest ");
         } else {

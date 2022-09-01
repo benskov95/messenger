@@ -11,7 +11,6 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import dto.UserDTO;
 import facades.UserFacade;
 import java.util.Date;
 import java.util.logging.Level;
@@ -26,67 +25,71 @@ import javax.ws.rs.core.Response;
 import security.errorhandling.AuthenticationException;
 import errorhandling.GenericExceptionMapper;
 import java.text.ParseException;
-import java.util.HashMap;
-import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManagerFactory;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import utils.EMF_Creator;
 
 @Path("auth")
 public class AuthenticationEndpoint {
 
-  private static final int TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 2; // 2 hrs
+  private static final int TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24; // 24 hrs
   private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
   private static final UserFacade USER_FACADE = UserFacade.getUserFacade(EMF);
   private static final JWTAuthenticationFilter jwt = new JWTAuthenticationFilter();
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-  private static HashMap<String, String> loggedInUsersMap = new HashMap();
   
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response login(String jsonString) throws AuthenticationException {
-    JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
-    String username = json.get("username").getAsString();
-    String password = json.get("password").getAsString();
-    
-    if (loggedInUsersMap.get(username) != null) {
-        throw new AuthenticationException("User is already logged in.");
-    }
+      JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
+      String username = json.get("username").getAsString();
+      String password = json.get("password").getAsString();
 
-    try {
-      User user = USER_FACADE.getVerifiedUser(username, password);
-      String token = createToken(user);
-      JsonObject responseJson = new JsonObject();
-      responseJson.addProperty("username", username);
-      responseJson.addProperty("token", token);
-      loggedInUsersMap.put(username, token);
-      return Response.ok(GSON.toJson(responseJson)).build();
-      
-    } catch (JOSEException | AuthenticationException ex) {
-      if (ex instanceof AuthenticationException) {
-        throw (AuthenticationException) ex;
-      }
-      Logger.getLogger(GenericExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    throw new AuthenticationException("Invalid username or password! Please try again");
+       try {
+           User user = USER_FACADE.getVerifiedUser(username, password);
+           String token = createToken(user);
+           JsonObject responseJson = new JsonObject();
+           responseJson.addProperty("username", username);
+           responseJson.addProperty("token", token);
+           return Response.ok(GSON.toJson(responseJson)).build();
+       } catch (JOSEException | AuthenticationException ex) {
+           if (ex instanceof AuthenticationException) {
+               throw (AuthenticationException) ex;
+           }
+           Logger.getLogger(GenericExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
+       }
+       throw new AuthenticationException("Invalid username or password! Please try again");
   }
   
-  @GET
-  @RolesAllowed("user")
+  @POST
+  @Path("token")
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public String logout(@HeaderParam("x-access-token") String token) throws ParseException, JOSEException, AuthenticationException {
-      UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
-      String result = loggedInUsersMap.remove(user.getName());
-      return GSON.toJson(new UserDTO(result));
-  }
+  public Response loginWithToken(String jsonString) throws AuthenticationException, ParseException {
+      JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
+      String token = json.get("token").getAsString();
 
+       try {
+           UserPrincipal user = jwt.getUserPrincipalFromTokenIfValid(token);
+           String newToken = createToken(USER_FACADE.getUserByName(user.getName()));
+           JsonObject responseJson = new JsonObject();
+           responseJson.addProperty("username", user.getName());
+           responseJson.addProperty("token", newToken);
+           return Response.ok(GSON.toJson(responseJson)).build();
+       } catch (JOSEException | AuthenticationException ex) {
+           if (ex instanceof AuthenticationException) {
+               throw (AuthenticationException) ex;
+           }
+           Logger.getLogger(GenericExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
+       }
+       throw new AuthenticationException("Something went wrong. Try logging in manually.");
+  }
+  
   private String createToken(User user) throws JOSEException {
     String issuer = "b-messenger";
-
     JWSSigner signer = new MACSigner(SharedSecret.getSharedKey());
     Date date = new Date();
+    
     JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
             .subject(user.getUsername())
             .claim("username", user.getUsername())
@@ -96,6 +99,7 @@ public class AuthenticationEndpoint {
             .issueTime(date)
             .expirationTime(new Date(date.getTime() + TOKEN_EXPIRE_TIME))
             .build();
+    
     SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
     signedJWT.sign(signer);
     return signedJWT.serialize();

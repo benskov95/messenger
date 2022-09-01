@@ -1,4 +1,4 @@
-import apiFacade, {handleHttpErrors} from "./apiFacade";
+import apiFacade from "./apiFacade";
 
 const messageFacade = () => {
 
@@ -8,7 +8,7 @@ const messageFacade = () => {
             process.env.REACT_APP_API_URL + `/api/message/${username}`, 
             apiFacade.makeOptions("GET", true)
         );
-        const result = handleHttpErrors(response);
+        const result = apiFacade.handleHttpErrors(response);
         return result;
     }
 
@@ -18,7 +18,7 @@ const messageFacade = () => {
             process.env.REACT_APP_API_URL + `/api/message/unread`, 
             apiFacade.makeOptions("GET", true)
         );
-        const result = handleHttpErrors(response);
+        const result = apiFacade.handleHttpErrors(response);
         return result;
     }
 
@@ -28,7 +28,7 @@ const messageFacade = () => {
             process.env.REACT_APP_API_URL + "/api/message", 
             apiFacade.makeOptions("PATCH", true, unreadMessages)
         );
-        const result = handleHttpErrors(response);
+        const result = apiFacade.handleHttpErrors(response);
         return result;
     }
 
@@ -38,7 +38,7 @@ const messageFacade = () => {
             process.env.REACT_APP_API_URL + "/api/message", 
             apiFacade.makeOptions("POST", true, message)
         );
-        const result = handleHttpErrors(response);
+        const result = apiFacade.handleHttpErrors(response);
         return result;
     }
 

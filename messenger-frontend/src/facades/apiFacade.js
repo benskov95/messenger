@@ -1,21 +1,17 @@
 
-export function handleHttpErrors(res) {
-  if (!res.ok) {
-    return Promise.reject({ status: res.status, fullError: res.json() });
-  }
-  return res.json();
-}
-
 const apiFacade = () => {
-    let tokenInUse = "";
 
-    const setTokenInUse = (token) => {
-        tokenInUse = token;
+    const setAccessToken = (token) => {
+        localStorage.setItem("messengerToken", token);
     };
 
-    const getTokenInUse = () => {
-        return tokenInUse;
+    const getAccessToken = () => {
+        return localStorage.getItem("messengerToken");
     };
+
+    const removeAccessToken = () => {
+        localStorage.removeItem("messengerToken");
+    }
 
     const login = async (user) => {
         const response = await fetch
@@ -27,14 +23,19 @@ const apiFacade = () => {
         return result;
     };
 
-    const logout = async () => {
-        const response = await fetch
-        (
-            process.env.REACT_APP_API_URL + "/api/auth",
-            makeOptions("GET", true)
-        );
-        const result = handleHttpErrors(response);
-        return result;
+    const loginWithToken = async () => {
+        if (getAccessToken() !== null) {
+            let token = {token: getAccessToken()};
+            const response = await fetch
+            (
+                process.env.REACT_APP_API_URL + "/api/auth/token",
+                makeOptions("POST", false, token)
+            )
+            const result = handleHttpErrors(response);
+            return result;
+        } else {
+            return false;
+        }
     }
 
     const register = async (user) => {
@@ -47,6 +48,13 @@ const apiFacade = () => {
         return result;
     }
 
+    const handleHttpErrors = (res) => {
+        if (!res.ok) {
+            return Promise.reject({ status: res.status, fullError: res.json() });
+        }
+        return res.json();
+    }
+
     const makeOptions = (method, addToken, body) => {
         var opts = {
         method: method,
@@ -56,7 +64,7 @@ const apiFacade = () => {
         },
         };
         if (addToken) {
-            opts.headers["x-access-token"] = getTokenInUse();
+            opts.headers["x-access-token"] = getAccessToken();
         }
         if (body) {
             opts.body = JSON.stringify(body);
@@ -65,12 +73,14 @@ const apiFacade = () => {
     };
 
     return {
-        makeOptions,
-        setTokenInUse,
-        getTokenInUse,
+        setAccessToken,
+        getAccessToken,
+        removeAccessToken,
         login,
-        logout,
-        register
+        loginWithToken,
+        register,
+        handleHttpErrors,
+        makeOptions
     };
 }
 

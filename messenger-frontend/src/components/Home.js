@@ -128,7 +128,7 @@ export default function Home(props) {
                         )
                     })}
                 </div>
-                : <p id="empty-list-text">No users found</p>}
+                : <p id="empty-list-text">No new users found</p>}
             </ul>
             <ul className="user-list" hidden={usersShowing}>
                 {requests.length > 0 ?
