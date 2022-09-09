@@ -1,0 +1,5 @@
+For building the app with electron:
+
+- Change to HashRouter
+- Change homepage in package.json to "."
+- Router path should be "/"

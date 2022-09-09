@@ -102,7 +102,6 @@ export default function Conversation(props) {
                 socket.current.emit("newMsg", props.user.username, msg.receiverName);
                 getAllMessages();
             } catch (e) {
-                console.log(e)
                 displayError(e, props.setError);
             }
             setNewMessage(msgInitialState);

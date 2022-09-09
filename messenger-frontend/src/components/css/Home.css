@@ -144,7 +144,3 @@
     margin-right: 50px;
     font-style: italic;
 }
-
-@media(prefers-color-scheme: dark) {
-    /* tbd */
-}

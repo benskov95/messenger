@@ -7,7 +7,7 @@ import "./css/Register.css";
 import "./css/Login.css";
 import { useNavigate } from "react-router-dom";
 
-export default function Register() {
+export default function Register({routerPath}) {
     const [loading, setLoading] = useState(false);
     const [newUser, setNewUser] = useState(userInitialState);
     const [status, setStatus] = useState("");
@@ -33,7 +33,6 @@ export default function Register() {
             setIsSuccess(true);
             setStatus("You have successfully registered your account. Go back to log in.");
             setNewUser(userInitialState);
-            console.log("ay")
         } catch (e) {
             setIsSuccess(false);
             displayError(e, setStatus);
@@ -52,7 +51,7 @@ export default function Register() {
     }
 
     const goToLogin = () => {
-        navigate("/");
+        navigate(routerPath);
     }
 
     return (

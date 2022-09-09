@@ -1,4 +1,6 @@
 body {
+  background-color: #383838;
+  color: white;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -13,44 +15,22 @@ code {
 }
 
 input {
+  background-color: grey;
+  color: white;
   text-align: center;
 }
 
 input::placeholder {
+  color: rgba(245, 245, 245, 0.541);
   text-align: center;
 }
 
 button {
-  background-color: blue;
+  background-color: orange;
   color: white;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: darkblue;
-}
-
-@media(prefers-color-scheme: dark) {
-  body {
-    background-color: #383838;
-    color: white;
-  }
-
-  input {
-      background-color: grey;
-      color: white;
-  }
-
-  input::placeholder {
-      color: rgba(245, 245, 245, 0.541);
-  }
-
-  button {
-    background-color: orange;
-  }
-
-  button:hover {
-    background-color: darkorange;
-  }
-  
+  background-color: darkorange;
 }

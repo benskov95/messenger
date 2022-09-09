@@ -37,7 +37,7 @@ export default function Login(props) {
             apiFacade.setAccessToken(token);
             props.setUser(jwtDecode(token));
             props.setIsLoggedIn(true);
-            navigate("/home");
+            navigate(`${props.routerPath}home`);
         } catch (e) {
             displayError(e, props.setError);
         }
@@ -46,19 +46,23 @@ export default function Login(props) {
 
     const tokenAuth = async () => {
         setLoading(true);
-        const res = await apiFacade.loginWithToken();
-        if (res) {
-            let token = res.token;
-            apiFacade.setAccessToken(token);
-            props.setUser(jwtDecode(token));
-            props.setIsLoggedIn(true);
-            navigate("/home");
+        try {
+            const res = await apiFacade.loginWithToken();
+            if (res.token) {
+                let token = res.token;
+                apiFacade.setAccessToken(token);
+                props.setUser(jwtDecode(token));
+                props.setIsLoggedIn(true);
+                navigate(`${props.routerPath}home`);
+            }
+        } catch (e) {
+            displayError(e, props.setError);
         }
         setLoading(false); 
     }
 
     const goToRegister = () => {
-        navigate("/register");
+        navigate(`${props.routerPath}register`);
     }
 
     const detectEnterKeyPress = (e) => {

@@ -14,7 +14,6 @@ export default function Home(props) {
     const [requests, setRequests] = useState([]);
     const socket = useRef(null);
     let searchQuery = "";
-    console.log(requests);
 
     useEffect(() => {
         socket.current = io(process.env.REACT_APP_SOCKET_SERVER_URL, {transports: ['websocket']});
