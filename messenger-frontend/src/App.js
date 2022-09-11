@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './root-css/App.css';
 import Home from './components/Home';
 import Login from "./components/Login"
@@ -10,7 +10,6 @@ import Error from './components/Error';
 import NotFound from "./components/NotFound";
 
 function App() {
-  const routerPath = process.env.REACT_APP_ROUTER_PATH;
   const [user, setUser] = useState({});
   const [friends, setFriends] = useState([]);
   const [unreadMessages, setUnreadMessages] = useState([]);
@@ -22,7 +21,6 @@ function App() {
       <div className="App">
         {isLoggedIn &&
           <FriendBar 
-          routerPath={routerPath}
           isLoggedIn={isLoggedIn} 
           setIsLoggedIn={setIsLoggedIn}
           user={user} 
@@ -37,10 +35,11 @@ function App() {
         <Error error={error} setError={setError} />
 
         <Routes>
-          <Route path={routerPath} element={<Login routerPath={routerPath} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUser={setUser} setError={setError} />} />
-          <Route path={`${routerPath}register`} element={<Register routerPath={routerPath} />} />
-          <Route path={`${routerPath}home`} element={<Home isLoggedIn={isLoggedIn} user={user} setFriends={setFriends} setError={setError} />} />
-          <Route path={`${routerPath}convo/:userId`} element={<Conversation user={user} setUnreadMessages={setUnreadMessages} setError={setError} />} />
+          <Route path="/" element={<Navigate replace to="/messenger" />} />
+          <Route path="/messenger" element={<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUser={setUser} setError={setError} />} />
+          <Route path="/messenger/register" element={<Register />} />
+          <Route path="/messenger/home" element={<Home isLoggedIn={isLoggedIn} user={user} setFriends={setFriends} setError={setError} />} />
+          <Route path={"messenger/convo/:userId"} element={<Conversation user={user} setUnreadMessages={setUnreadMessages} setError={setError} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

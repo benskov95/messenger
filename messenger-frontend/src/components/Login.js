@@ -37,7 +37,7 @@ export default function Login(props) {
             apiFacade.setAccessToken(token);
             props.setUser(jwtDecode(token));
             props.setIsLoggedIn(true);
-            navigate(`${props.routerPath}home`);
+            navigate("/messenger/home");
         } catch (e) {
             displayError(e, props.setError);
         }
@@ -53,7 +53,7 @@ export default function Login(props) {
                 apiFacade.setAccessToken(token);
                 props.setUser(jwtDecode(token));
                 props.setIsLoggedIn(true);
-                navigate(`${props.routerPath}home`);
+                navigate("/messenger/home");
             }
         } catch (e) {
             displayError(e, props.setError);
@@ -62,7 +62,7 @@ export default function Login(props) {
     }
 
     const goToRegister = () => {
-        navigate(`${props.routerPath}register`);
+        navigate("/messenger/register");
     }
 
     const detectEnterKeyPress = (e) => {

@@ -60,14 +60,14 @@ export default function FriendBar(props) {
             currentlySelected.target.className = "friend-list-element";
         }
         setCurrentConvoUser("");
-        navigate(`${props.routerPath}home`);
+        navigate("/messenger/home");
     }
 
     const goToConvo = (e) => {
         let id = e.target.getAttribute("name");
         setCurrentConvoUser(id);
         highlightSelectedFriend(e);
-        navigate(`${props.routerPath}convo/${id}`);
+        navigate(`messenger/convo/${id}`);
     }
 
     const logout = async () => {
@@ -80,7 +80,7 @@ export default function FriendBar(props) {
             props.setFriends([]);
             props.setUnreadMessages([]);
             apiFacade.removeAccessToken();
-            navigate(props.routerPath);
+            navigate("/messenger");
         } catch (e) {
             displayError(e, props.setError)
         }

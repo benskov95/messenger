@@ -7,7 +7,7 @@ import "./css/Register.css";
 import "./css/Login.css";
 import { useNavigate } from "react-router-dom";
 
-export default function Register({routerPath}) {
+export default function Register() {
     const [loading, setLoading] = useState(false);
     const [newUser, setNewUser] = useState(userInitialState);
     const [status, setStatus] = useState("");
@@ -51,7 +51,7 @@ export default function Register({routerPath}) {
     }
 
     const goToLogin = () => {
-        navigate(routerPath);
+        navigate("/messenger");
     }
 
     return (
