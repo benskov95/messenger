@@ -2,9 +2,9 @@
   "name": "chat-server",
   "version": "1.0.0",
   "description": "",
-  "main": "test.js",
+  "main": "socketServer.js",
   "scripts": {
-    "start": "node index"
+    "start": "node socketServer.js"
   },
   "author": "ben",
   "license": "MIT",
