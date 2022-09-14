@@ -1,16 +1,9 @@
-const express = require("express")
-const socketIo = require("socket.io")
-const https = require("http")
 const PORT = process.env.PORT || 5001;
-
+const express = require("express")
 const app = express();
-const server = https.createServer(app);
+const server = require("http").createServer(app);
+const io = require("socket.io")(server, {cors: {origin: "*"}})
 
-const io = socketIo(server,{ 
-    cors: {
-      origin: "*"
-    }
-}) 
 
 app.get('/', function(_, res) {
     res.sendFile(__dirname + '/index.html');
