@@ -2,3 +2,4 @@ For building the app with electron:
 
 - Change to HashRouter
 - Change homepage in package.json to "."
+- Make sure to build before packaging if you've changed anything
