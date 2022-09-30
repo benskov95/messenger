@@ -23,7 +23,7 @@ export default function FriendBar(props) {
 
     useEffect(() => {
         let loggedInUser = props.user.username;
-        socket.current = io(process.env.REACT_APP_SOCKET_SERVER_URL, {transports: ['websocket']});
+        socket.current = io(process.env.REACT_APP_SOCKET_SERVER_URL, {path: process.env.REACT_APP_SERVER_PATH, transports: ['websocket']});
         socket.current.on("connect", () => {
             props.friends.forEach(friend => {
                 if (friend.username !== currentConvoUser && socket.current !== null) {

@@ -29,18 +29,20 @@ export default function Conversation(props) {
 
     useEffect(() => {
         let loggedInUser = props.user.username;
-        socket.current = io(process.env.REACT_APP_SOCKET_SERVER_URL, {transports: ['websocket']});
+        socket.current = io(process.env.REACT_APP_SOCKET_SERVER_URL, {path: process.env.REACT_APP_SERVER_PATH, transports: ['websocket']});
         socket.current.on("connect", () => {
             socket.current.emit("join", createRoomId(loggedInUser, userId, "convo"));
             socket.current.on("reload", () => {
                 getAllMessages();
             })
-            socket.current.on("isTyping", () => {
-                setUserTyping(true);
-                if (timer !== null) clearTimeout(timer);
-                timer = setTimeout(() => {
-                    setUserTyping(false);
-                }, 3000);
+            socket.current.on("isTyping", (sender, receiver) => {
+                if (sender === userId && loggedInUser === receiver) {
+                    setUserTyping(true);
+                    if (timer !== null) clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        setUserTyping(false);
+                    }, 3000);
+                }
             })
         })
         return () => {
@@ -58,7 +60,7 @@ export default function Conversation(props) {
     }, [messages]);
 
     const handleChange = (e) => {
-        socket.current.emit("startTyping");
+        socket.current.emit("startTyping", props.user.username, userId);
         setDefaultHeight("");
         setNewMessage({...newMessage, [e.target.name]: e.target.value});
     }

@@ -16,7 +16,7 @@ export default function Home(props) {
     let searchQuery = "";
 
     useEffect(() => {
-        socket.current = io(process.env.REACT_APP_SOCKET_SERVER_URL, {transports: ['websocket']});
+        socket.current = io(process.env.REACT_APP_SOCKET_SERVER_URL, {path: process.env.REACT_APP_SERVER_PATH, transports: ['websocket']});
         socket.current.on("connect", () => {
             socket.current.emit("join", "home");
             socket.current.on(props.user.username, () => {

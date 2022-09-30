@@ -2,7 +2,7 @@ const PORT = process.env.PORT || 5001;
 const express = require("express")
 const app = express();
 const server = require("http").createServer(app);
-const io = require("socket.io")(server, {cors: {origin: "*"}})
+const io = require("socket.io")(server, {path: "/chat-server/socket.io", cors: {origin: "*"}})
 
 
 app.get('/', function(_, res) {
@@ -19,8 +19,8 @@ io.on("connection", (socket) => {
         socket.broadcast.emit(username);
     })
 
-    socket.on("startTyping", () => {
-        socket.broadcast.emit("isTyping")
+    socket.on("startTyping", (sender, receiver) => {
+        socket.broadcast.emit("isTyping", sender, receiver)
     })
 
     socket.on("newMsg", (username, receiver) => {
@@ -34,6 +34,6 @@ io.on("connection", (socket) => {
 });
 
 server.listen(PORT, err => {
- if(err) console.log(err)
+ if (err) console.log(err)
  console.log("Server running on port", PORT)
 })
