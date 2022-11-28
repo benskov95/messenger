@@ -41,3 +41,13 @@
 #register-btn:hover {
     color: rgba(255, 255, 255, 0.61);
 }
+
+@media only screen and (max-width: 600px) {
+    .login-input {
+        width: 50vw;
+    }
+    
+    #login-btn {
+        width: 25vw;
+    }
+}

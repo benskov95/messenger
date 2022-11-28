@@ -139,3 +139,38 @@
     font-style: italic;
     margin-right: 30px;
 }
+
+@media only screen and (max-width: 600px) {
+    .friend-list-element {
+        margin-left: -45px;
+    }
+    
+    .friend-name {
+        font-size: 12px;
+    }
+
+    .friend-pic {
+        max-width: 2em;
+        max-height: 2em;
+    }
+
+    #user-box {
+        position: fixed;
+    }
+    
+    #user-pic {
+        max-width: 2em;
+        max-height: 2em;
+    }
+
+    #username {
+        position: static;
+        font-size: 12px;
+        margin-left: 20px;
+    }
+
+    #home-btn {
+        margin-top: -2px;
+        height: 15px;
+    }
+}

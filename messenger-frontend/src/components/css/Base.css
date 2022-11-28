@@ -7,7 +7,7 @@
 
 .main-box-scrollable {
     width: 75vw;
-    height: 85vh;
+    height: 90vh;
     overflow: auto;
 }
 
@@ -36,5 +36,11 @@
         width: 65vw; 
         height: 90vh;
         margin: auto;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .main-box {
+        overflow: hidden;
     }
 }

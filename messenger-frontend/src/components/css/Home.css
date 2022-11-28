@@ -144,3 +144,13 @@
     margin-right: 50px;
     font-style: italic;
 }
+
+@media only screen and (max-width: 600px) {
+    #option-btn-container {
+        margin-left: 0.3rem;
+    }
+
+    #empty-list-text {
+        margin-right: 220px;
+    }
+}

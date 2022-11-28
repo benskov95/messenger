@@ -125,7 +125,7 @@ export default function Conversation(props) {
     const prepListForDisplay = (messageList) => {
         messageList.sort((a, b) => a.timestamp - b.timestamp);
         messageList.forEach(msg => {
-            msg.timestamp = moment(msg.timestamp).format('MMMM Do, HH:mm');
+            msg.timestamp = moment(msg.timestamp).format('D MMMM, HH:mm');
         });
         
         return messageList;
