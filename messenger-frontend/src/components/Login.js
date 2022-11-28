@@ -24,7 +24,6 @@ export default function Login(props) {
     }, [])
 
     const handleChange = (e) => {
-        props.setError("");
         setLoginCreds({...loginCreds, [e.target.name]: e.target.value});
     }
 
